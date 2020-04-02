@@ -4,8 +4,6 @@ import org.apache.spark.sql.types._
 
 
 class Schemas extends Serializable {
-  /*need to define MixPanel schemas as structtype arrays as the scala complier gets a java.lang.StackOverflowError because of a
-case class limitation on having a max of 22 fields*/
 
   def jhu(): StructType = {
     StructType(Seq(
@@ -13,9 +11,9 @@ case class limitation on having a max of 22 fields*/
       StructField("admin", StringType, true),
       StructField("Province_State", StringType, true),
       StructField("Country_Region", StringType, true),
-      StructField("Last_Update", StringType, true),
-      StructField("Latitude", StringType, true),
-      StructField("Longitude", StringType, true),
+      StructField("Last_Update", DateType, true),
+      StructField("Latitude", DoubleType, true),
+      StructField("Longitude", DoubleType, true),
       StructField("Confirmed", StringType, true),
       StructField("Deaths", StringType, true),
       StructField("Recovered", StringType, true),
@@ -32,8 +30,9 @@ case class limitation on having a max of 22 fields*/
       StructField("state", StringType, true),
       StructField("country", StringType, true),
       StructField("population", StringType, true),
-      StructField("Latitude", StringType, true),
-      StructField("Longitude", StringType, true),
+      StructField("Latitude", DoubleType, true),
+      StructField("Longitude", DoubleType, true),
+      StructField("url", StringType, true),
       StructField("aggregate", StringType, true),
       StructField("timezone", StringType, true),
       StructField("cases", StringType, true),
@@ -41,20 +40,10 @@ case class limitation on having a max of 22 fields*/
       StructField("recovered", StringType, true),
       StructField("active", StringType, true),
       StructField("tested", StringType, true),
-      StructField("rewards_started_at", StringType, true),
       StructField("growthFactor", StringType, true),
-      StructField("Last_Update", StringType, true)
+      StructField("Last_Update", DateType, true)
     )
     )
   }
-
-
-  def emaildeletes(): StructType = {
-    StructType(Seq(
-      StructField("email", StringType, true)
-    )
-    )
-  }
-
 
 }

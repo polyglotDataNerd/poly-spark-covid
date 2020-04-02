@@ -28,9 +28,7 @@ class Analysis extends java.io.Serializable {
         .schema(schemas.jhu())
         .csv("s3a://poly-testing/covid/jhu/transformed/*")
         .distinct()
-        .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-      jhu.createOrReplaceTempView("jhu")
-      jhu.show(10, false)
+      jhu.createOrReplaceTempView("jhuv")
 
       val cds = sql
         .read
@@ -38,9 +36,89 @@ class Analysis extends java.io.Serializable {
         .option("header", "true")
         .csv("s3a://poly-testing/covid/cds/*")
         .distinct()
-        .persist(StorageLevel.MEMORY_ONLY_SER_2)
-      cds.createOrReplaceTempView("cds")
-      cds.show(10, false)
+      cds.createOrReplaceTempView("cdsv")
+
+      sparkSession.sql(
+        """
+          select distinct
+          city,
+          county,
+          state,
+          country,
+          population,
+          --round(Latitude * 2,2)/2 Latitude,
+          --round(Longitude * 2,2)/2 Longitude,
+          Latitude,
+          Longitude,
+          url,
+          aggregate,
+          timezone,
+          cases,
+          deaths,
+          recovered,
+          active,
+          tested,
+          growthFactor,
+          Last_Update
+          from cdsv
+          --where country = 'USA' --and state = 'Normandie' --and county = 'Seminole County'
+          """.stripMargin
+      ).persist(StorageLevel.MEMORY_ONLY_SER)
+        .createOrReplaceTempView("cds")
+
+
+      sparkSession.sql(
+        """
+          select distinct
+          fips,
+          case when Country_Region = 'US' then admin || ' County' else admin end as county,
+          Province_State,
+          Country_Region,
+          Last_Update,
+          --round(Latitude * 2,2)/2 Latitude,
+          --round(Longitude * 2,2)/2 Longitude,
+          Latitude,
+          Longitude,
+          Confirmed,
+          Deaths,
+          Recovered,
+          Active,
+          Combined_Key
+          from jhuv
+          --where Country_Region = 'US' --and Province_State = 'Normandie' --and admin = 'Seminole'
+          """.stripMargin
+      ).persist(StorageLevel.MEMORY_ONLY_SER)
+        .createOrReplaceTempView("jhu")
+
+      sparkSession.sql(
+        """
+                select distinct
+                a.city,
+                a.county,
+                a.state,
+                a.country,
+                a.population,
+                a.Latitude,
+                a.Longitude,
+                a.url,
+                a.aggregate,
+                a.timezone,
+                a.cases,
+                b.confirmed as US_Confirmed_County,
+                a.deaths,
+                b.deaths as US_Deaths_County,
+                a.recovered,
+                b.recovered as US_Recovered_County,
+                a.active,
+                b.active as US_Active_County,
+                a.tested,
+                a.growthFactor,
+                a.Last_Update
+                from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
+                where country != 'USA'
+                order by 1 DESC
+                """.stripMargin
+      ).show(100, false)
 
 
       sw.stop()

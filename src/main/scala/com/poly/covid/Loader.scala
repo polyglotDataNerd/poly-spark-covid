@@ -20,16 +20,10 @@ object Loader extends java.io.Serializable {
   System.setProperty("logfile.name", "/var/tmp/spark.log")
   config.loadLog4jprops()
   Logger.getLogger(classOf[RackResolver]).getLevel
-  LogManager.getLogger("org").setLevel(Level.DEBUG)
-  LogManager.getLogger("akka").setLevel(Level.DEBUG)
-  Logger.getLogger("org").setLevel(Level.DEBUG)
-  Logger.getLogger("akka").setLevel(Level.DEBUG)
+  Logger.getLogger("org").setLevel(Level.ERROR)
+  Logger.getLogger("akka").setLevel(Level.ERROR)
 
   def main(args: Array[String]): Unit = {
-
-    //    val utilsj: Utils = new Utils()
-    //    println(utilsj.getSSMParam("/s3/polyglotDataNerd/admin/AccessKey"))
-    //
 
     val stringBuilder: java.lang.StringBuilder = new java.lang.StringBuilder
     //    val source = args(0)
@@ -58,7 +52,6 @@ object Loader extends java.io.Serializable {
       .config("spark.hadoop.fs.s3a.access.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/AccessKey"))
       .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))
       .getOrCreate()
-    sparkSession.sparkContext.setLogLevel("ERROR")
     val sc = sparkSession.sparkContext
     val sql = sparkSession.sqlContext
 

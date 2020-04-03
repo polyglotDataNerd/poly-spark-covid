@@ -90,8 +90,9 @@ class Analysis extends java.io.Serializable {
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("jhu")
 
-      sparkSession.sql(
-        """
+      utils.gzipWriter("s3a://poly-testing/covid/combined/" + date,
+        sparkSession.sql(
+          """
                 select distinct
                 a.city,
                 a.county,
@@ -115,10 +116,9 @@ class Analysis extends java.io.Serializable {
                 a.growthFactor,
                 a.Last_Update
                 from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
-                --where country != 'USA'
                 order by country DESC, city ASC
                 """.stripMargin
-      ).show(500, false)
+        ))
 
 
       sw.stop()

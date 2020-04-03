@@ -22,5 +22,6 @@ Frequency
 -  
 * Dependant on the frequency of the extract and load pipeline, all data will be sourced in s3 via the objects that is extracted by the data pipeline. 
 
-
+Frequency
+- Refer to [Readme.md](/output)
         

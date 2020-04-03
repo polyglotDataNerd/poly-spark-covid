@@ -2,9 +2,10 @@
 
 **Tracks COVID19 Cases**
 
+Output sample
+
 Output Fields
 -
-    
     city:string
     county:string
     state:string
@@ -27,5 +28,6 @@ Output Fields
     growth_factor:string
     last_updated:date
     
-Dataset
-- Refer to compress gzip in the directory [output.gz](output.gz)
+Output Fields
+-
+* Refer to compress gzip in the directory [output.gz](output.gz)

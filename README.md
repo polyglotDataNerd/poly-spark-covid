@@ -11,8 +11,6 @@ Dependencies:
 * [Apache Spark 2.4.5](https://spark.apache.org/)
 * [COVID19 ELT Pipeline Repo](https://github.com/polyglotDataNerd/poly-covid19)
 * [Scala 2.12](https://www.scala-lang.org/download/2.12.10.html)
-* [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
-
 
 Intention
 -

@@ -46,4 +46,32 @@ class Schemas extends Serializable {
     )
   }
 
+  def covidStruct(): StructType = {
+    StructType(Seq(
+      StructField("city", StringType, true),
+      StructField("county", StringType, true),
+      StructField("state", StringType, true),
+      StructField("country", StringType, true),
+      StructField("population", StringType, true),
+      StructField("latitude", DoubleType, true),
+      StructField("longitude", DoubleType, true),
+      StructField("url", StringType, true),
+      StructField("aggregate", StringType, true),
+      StructField("timezone", StringType, true),
+      StructField("cases", StringType, true),
+      StructField("us_confirmed_county", StringType, true),
+      StructField("deaths", StringType, true),
+      StructField("us_deaths_county", StringType, true),
+      StructField("recovered", StringType, true),
+      StructField("us_recovered_county", StringType, true),
+      StructField("active", StringType, true),
+      StructField("us_active_county", StringType, true),
+      StructField("tested", StringType, true),
+      StructField("growth_factor", StringType, true),
+      StructField("last_updated", DateType, true)
+    )
+    )
+  }
+
+
 }

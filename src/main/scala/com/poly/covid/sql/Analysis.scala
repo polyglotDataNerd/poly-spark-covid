@@ -115,10 +115,10 @@ class Analysis extends java.io.Serializable {
                 a.growthFactor,
                 a.Last_Update
                 from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
-                where country != 'USA'
-                order by 1 DESC
+                --where country != 'USA'
+                order by country DESC, city ASC
                 """.stripMargin
-      ).show(100, false)
+      ).show(500, false)
 
 
       sw.stop()

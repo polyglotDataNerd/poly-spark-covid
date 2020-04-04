@@ -4,6 +4,8 @@ Output sample
 
 Output Fields
 -
+    name:string
+    level:string
     city:string
     county:string
     state:string

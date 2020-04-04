@@ -25,6 +25,8 @@ class Schemas extends Serializable {
 
   def cds(): StructType = {
     StructType(Seq(
+      StructField("name", StringType, true),
+      StructField("level", StringType, true),
       StructField("city", StringType, true),
       StructField("county", StringType, true),
       StructField("state", StringType, true),
@@ -48,6 +50,8 @@ class Schemas extends Serializable {
 
   def covidStruct(): StructType = {
     StructType(Seq(
+      StructField("name", StringType, true),
+      StructField("level", StringType, true),
       StructField("city", StringType, true),
       StructField("county", StringType, true),
       StructField("state", StringType, true),

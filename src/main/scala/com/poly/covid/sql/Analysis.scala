@@ -32,6 +32,8 @@ class Analysis extends java.io.Serializable {
 
       val cds = sql
         .read
+        .option("quote", "\"")
+        .option("escape", "\"")
         .schema(schemas.cds())
         .option("header", "true")
         .csv("s3a://poly-testing/covid/cds/*")
@@ -94,6 +96,8 @@ class Analysis extends java.io.Serializable {
         sparkSession.sql(
           """
                 select distinct
+                a.name,
+                a.level,
                 a.city,
                 a.county,
                 a.state,

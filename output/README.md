@@ -28,7 +28,7 @@ Output Fields
     growth_factor:string
     last_updated:date
     
-Output Fields
+Output Sample Query Result Sets
 -
 * Refer to compress gzip in the directory
 

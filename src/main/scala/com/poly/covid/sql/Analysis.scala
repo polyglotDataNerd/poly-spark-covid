@@ -43,13 +43,13 @@ class Analysis extends java.io.Serializable {
       sparkSession.sql(
         """
           select distinct
+          name,
+          level,
           city,
           county,
           state,
           country,
           population,
-          --round(Latitude * 2,2)/2 Latitude,
-          --round(Longitude * 2,2)/2 Longitude,
           Latitude,
           Longitude,
           url,
@@ -63,7 +63,6 @@ class Analysis extends java.io.Serializable {
           growthFactor,
           Last_Update
           from cdsv
-          --where country = 'USA' --and state = 'Normandie' --and county = 'Seminole County'
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("cds")
@@ -77,8 +76,6 @@ class Analysis extends java.io.Serializable {
           Province_State,
           Country_Region,
           Last_Update,
-          --round(Latitude * 2,2)/2 Latitude,
-          --round(Longitude * 2,2)/2 Longitude,
           Latitude,
           Longitude,
           Confirmed,
@@ -87,7 +84,6 @@ class Analysis extends java.io.Serializable {
           Active,
           Combined_Key
           from jhuv
-          --where Country_Region = 'US' --and Province_State = 'Normandie' --and admin = 'Seminole'
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("jhu")

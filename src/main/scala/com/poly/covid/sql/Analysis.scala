@@ -57,14 +57,28 @@ class Analysis extends java.io.Serializable {
           url,
           aggregate,
           timezone,
-          cases,
-          deaths,
-          recovered,
-          active,
-          tested,
-          growthFactor,
+          sum(cases) cases,
+          sum(deaths) deaths,
+          sum(recovered) recovered,
+          sum(active) active,
+          sum(tested) tested,
+          max(growthFactor) growthFactor,
           Last_Update
           from cdsv
+          group by
+            name,
+            level,
+            city,
+            county,
+            state,
+            country,
+            population,
+            Latitude,
+            Longitude,
+            url,
+            aggregate,
+            timezone,
+            Last_Update
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("cds")
@@ -80,20 +94,30 @@ class Analysis extends java.io.Serializable {
           Last_Update,
           Latitude,
           Longitude,
-          Confirmed,
-          Deaths,
-          Recovered,
-          Active,
+          sum(Confirmed) Confirmed,
+          sum(Deaths) Deaths,
+          sum(Recovered) Recovered,
+          sum(Active) Active,
           Combined_Key
           from jhuv
+          group by
+            fips,
+            case when Country_Region = 'US' then admin || ' County' else admin end,
+            Province_State,
+            Country_Region,
+            Last_Update,
+            Latitude,
+            Longitude,
+            Combined_Key
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("jhu")
 
+      /* denormalized table is exploded so will have possible duplicity */
       utils.gzipWriter("s3a://poly-testing/covid/combined/" + date,
         sparkSession.sql(
           """
-                select distinct
+            select distinct
                 a.name,
                 a.level,
                 a.city,
@@ -106,33 +130,19 @@ class Analysis extends java.io.Serializable {
                 a.url,
                 a.aggregate,
                 a.timezone,
-                sum(a.cases),
-                sum(b.confirmed) as US_Confirmed_County,
-                sum(a.deaths),
-                sum(b.deaths) as US_Deaths_County,
-                sum(a.recovered),
-                sum(b.recovered) as US_Recovered_County,
-                sum(a.active),
-                sum(b.active) as US_Active_County,
-                sum(a.tested),
-                max(a.growthFactor),
+                a.cases,
+                b.confirmed as US_Confirmed_County,
+                a.deaths,
+                b.deaths as US_Deaths_County,
+                a.recovered,
+                b.recovered as US_Recovered_County,
+                a.active,
+                b.active as US_Active_County,
+                a.tested,
+                a.growthFactor,
                 a.Last_Update
-                from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
-                group by
-                a.name,
-                a.level,
-                a.city,
-                a.county,
-                a.state,
-                a.country,
-                a.population,
-                a.Latitude,
-                a.Longitude,
-                a.url,
-                a.aggregate,
-                a.timezone,
-                a.Last_Update
-                order by country DESC, city ASC
+           from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
+           order by country DESC, city ASC
                 """.stripMargin
         ))
       sw.stop()

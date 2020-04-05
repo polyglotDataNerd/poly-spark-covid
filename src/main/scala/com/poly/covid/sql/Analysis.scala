@@ -106,16 +106,16 @@ class Analysis extends java.io.Serializable {
                 a.url,
                 a.aggregate,
                 a.timezone,
-                a.cases,
+                sum(a.cases),
                 sum(b.confirmed) as US_Confirmed_County,
-                a.deaths,
+                sum(a.deaths),
                 sum(b.deaths) as US_Deaths_County,
-                a.recovered,
+                sum(a.recovered),
                 sum(b.recovered) as US_Recovered_County,
-                a.active,
+                sum(a.active),
                 sum(b.active) as US_Active_County,
-                a.tested,
-                a.growthFactor,
+                sum(a.tested),
+                max(a.growthFactor),
                 a.Last_Update
                 from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
                 group by
@@ -131,12 +131,6 @@ class Analysis extends java.io.Serializable {
                 a.url,
                 a.aggregate,
                 a.timezone,
-                a.cases,
-                a.deaths,
-                a.recovered,
-                a.active,
-                a.tested,
-                a.growthFactor,
                 a.Last_Update
                 order by country DESC, city ASC
                 """.stripMargin

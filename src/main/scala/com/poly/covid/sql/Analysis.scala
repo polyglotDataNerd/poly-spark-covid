@@ -90,7 +90,7 @@ class Analysis extends java.io.Serializable {
         """
           select distinct
           fips,
-          case when Country_Region = 'US' then admin || ' County' else admin end as county,
+          admin as county,
           Province_State,
           Country_Region,
           Last_Update,
@@ -104,7 +104,7 @@ class Analysis extends java.io.Serializable {
           from jhuv
           group by
             fips,
-            case when Country_Region = 'US' then admin || ' County' else admin end,
+            admin,
             Province_State,
             Country_Region,
             Last_Update,
@@ -143,7 +143,10 @@ class Analysis extends java.io.Serializable {
                 a.tested,
                 a.growthFactor,
                 a.Last_Update
-           from cds a left join jhu b on a.Last_Update = b.Last_Update and b.county = a.county
+           from cds a left join jhu b
+           on a.Last_Update = b.Last_Update
+           and lower(trim(substring_index(a.county, ' ', 1))) = lower(trim(b.county))
+           and lower(trim(a.state)) = lower(trim(b.Province_State))
            order by country DESC, city ASC
                 """.stripMargin
         ))

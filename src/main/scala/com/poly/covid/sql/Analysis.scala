@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import com.poly.Utils._
 import com.poly.covid.utility._
-import org.apache.commons.lang3.time.StopWatch
+import org.apache.commons.lang3.time.{DateUtils, StopWatch}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.storage.StorageLevel
@@ -14,7 +14,7 @@ class Analysis extends java.io.Serializable {
 
   val config: ConfigProps = new ConfigProps
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  val date = format.format(new java.util.Date())
+  val date = format.format(DateUtils.addDays(new java.util.Date(), -0))
   val sw = new StopWatch
 
 
@@ -32,13 +32,15 @@ class Analysis extends java.io.Serializable {
         .distinct()
       jhu.createOrReplaceTempView("jhuv")
 
+      /* only takes current day pull and not all files since the
+      go pipeline takes current and history daily */
       val cds = sql
         .read
         .option("quote", "\"")
         .option("escape", "\"")
         .schema(schemas.cds())
         .option("header", "true")
-        .csv("s3a://poly-testing/covid/cds/*")
+        .csv("s3a://poly-testing/covid/cds/" + date + "/*")
         .distinct()
       cds.createOrReplaceTempView("cdsv")
 
@@ -113,8 +115,8 @@ class Analysis extends java.io.Serializable {
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("jhu")
 
-      /* denormalized table is exploded so will have possible duplicity */
-      utils.gzipWriter("s3a://poly-testing/covid/combined/" + date,
+      /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
+      utils.gzipWriter("s3a://poly-testing/covid/combined/",
         sparkSession.sql(
           """
             select distinct

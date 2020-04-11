@@ -19,6 +19,7 @@ object Loader extends java.io.Serializable {
   /*set logger*/
   System.setProperty("logfile.name", "/var/tmp/spark.log")
   config.loadLog4jprops()
+  /* non verbose logging */
   Logger.getLogger(classOf[RackResolver]).getLevel
   Logger.getLogger("org").setLevel(Level.ERROR)
   Logger.getLogger("akka").setLevel(Level.ERROR)

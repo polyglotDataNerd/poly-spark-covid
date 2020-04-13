@@ -84,6 +84,7 @@ class Analysis extends java.io.Serializable {
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("cds")
+      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_cds from cds""").show(1, false)
 
 
       sparkSession.sql(
@@ -114,6 +115,7 @@ class Analysis extends java.io.Serializable {
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
         .createOrReplaceTempView("jhu")
+      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_jhu from jhu""").show(1, false)
 
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
       utils.gzipWriter("s3a://poly-testing/covid/combined/",

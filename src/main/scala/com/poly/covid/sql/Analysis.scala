@@ -31,6 +31,7 @@ class Analysis extends java.io.Serializable {
         .csv("s3a://poly-testing/covid/jhu/transformed/*")
         .distinct()
       jhu.createOrReplaceTempView("jhuv")
+      println(date + ": jhu count: " + jhu.count())
 
       /* only takes current day pull and not all files since the
       go pipeline takes current and history daily */
@@ -43,6 +44,7 @@ class Analysis extends java.io.Serializable {
         .csv("s3a://poly-testing/covid/cds/" + date + "/*")
         .distinct()
       cds.createOrReplaceTempView("cdsv")
+      println(date + ": cds count: " + cds.count())
 
       sparkSession.sql(
         """
@@ -64,6 +66,8 @@ class Analysis extends java.io.Serializable {
           sum(recovered) recovered,
           sum(active) active,
           sum(tested) tested,
+          sum(hospitalized) hospitalized,
+          sum(discharged) discharged,
           max(growthFactor) growthFactor,
           Last_Update
           from cdsv
@@ -117,10 +121,10 @@ class Analysis extends java.io.Serializable {
         .createOrReplaceTempView("jhu")
       sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_jhu from jhu""").show(1, false)
 
+
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
-      utils.gzipWriter("s3a://poly-testing/covid/combined/",
-        sparkSession.sql(
-          """
+      val combined = sparkSession.sql(
+        """
             select distinct
                 a.name,
                 a.level,
@@ -142,7 +146,9 @@ class Analysis extends java.io.Serializable {
                 b.recovered as US_Recovered_County,
                 a.active,
                 b.active as US_Active_County,
-                a.tested,
+                tested,
+                a.hospitalized,
+                a.discharged,
                 a.growthFactor,
                 a.Last_Update
            from cds a left join jhu b
@@ -151,7 +157,12 @@ class Analysis extends java.io.Serializable {
              and lower(trim(a.state)) = lower(trim(b.Province_State))
            order by country DESC, city ASC
                 """.stripMargin
-        ))
+      )
+      combined.createOrReplaceTempView("combined")
+      println(date + ": combined count: " + combined.count())
+      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
+
+      utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))
     }

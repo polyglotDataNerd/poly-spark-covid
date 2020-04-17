@@ -23,4 +23,24 @@ Frequency
 Output
 -
 * Refer to [Readme.md](/output)
+* Made s3 prefix public to download individual sources files along with combined sources
+    - All objects are compressed in GZIP format
+
+            -Johns Hopkins
+            aws s3 ls s3://poly-testing/covid/jhu  --recursive
+            2020-04-01 08:43:11          0 covid/jhu/
+            2020-04-02 05:30:58     329761 covid/jhu/UID_ISO_FIPS_LookUp_Table.csv
+            2020-04-01 08:43:19          0 covid/jhu/raw/
+            2020-04-17 05:13:43     314337 covid/jhu/raw/04-16-2020.csv
+            2020-04-17 05:14:48    1223240 covid/jhu/transformed/2020-04-17/jhu_2020-04-17.gz
+            
+            -Data Scraper
+            aws s3 ls s3://poly-testing/covid/cds  --recursive
+            2020-04-17 05:14:49     819222 covid/cds/2020-04-17/cds_2020-04-17.gz
+            
+            -Combined
+            aws s3 ls s3://poly-testing/covid/combined  --recursive
+            2020-04-17 05:25:51          0 covid/combined/_SUCCESS
+            2020-04-17 05:25:49    3834451 covid/combined/part-00000-956ddeaf-0cac-472a-9098-0d86362a9e52-c000.csv.gz
+
         

@@ -23,7 +23,7 @@ Frequency
 Output
 -
 * Refer to [Readme.md](/output)
-* Made s3 prefix public to download individual sources files along with combined sources
+* Made s3 prefix public to download individual source files along with combined sources
     - All objects are compressed in GZIP format
 
             -Johns Hopkins

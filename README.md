@@ -1,4 +1,4 @@
-#COVID19 Analysis
+# COVID-19 Public Data
 
 **Tracks COVID19 Cases**
 

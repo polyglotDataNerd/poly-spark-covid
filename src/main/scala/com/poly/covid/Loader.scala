@@ -25,12 +25,11 @@ object Loader extends java.io.Serializable {
   Logger.getLogger("akka").setLevel(Level.ERROR)
 
   def main(args: Array[String]): Unit = {
+    runSpark()
+  }
 
+  def runSpark(): Unit = {
     val stringBuilder: java.lang.StringBuilder = new java.lang.StringBuilder
-    //    val source = args(0)
-    //    val target = args(1)
-    //    val format = args(2)
-    //    val sourceName = args(3)
     val utils: Utils = new Utils()
     /*local mac*/
     val sparkSession = SparkSession

@@ -165,6 +165,9 @@ class Analysis extends java.io.Serializable {
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))
+
+      /* QA */
+      new CovidQA().runQA(sparkSession, sql, stringBuilder)
     }
     catch {
       case e: Exception => {

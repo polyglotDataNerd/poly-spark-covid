@@ -94,6 +94,10 @@ object Loader extends java.io.Serializable {
 
     new Analysis().run(sparkSession, sc, sql, stringBuilder)
 
+    new Utils(config.getPropValues("emails"), config.getPropValues("fromemails"),
+      "ETL Notification " + " SPARK: COVID-19 Loader",
+      stringBuilder.toString()).sendEMail()
+
     sparkSession.stop()
     System.exit(0);
   }

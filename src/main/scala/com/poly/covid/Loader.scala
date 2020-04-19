@@ -63,9 +63,6 @@ object Loader extends java.io.Serializable {
       .config("org.apache.spark.shuffle.sort.SortShuffleManager", "tungsten-sort")
       .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
       .config("spark.speculation", "false")
-      /*increase heap space https://stackoverflow.com/questions/21138751/spark-java-lang-outofmemoryerror-java-heap-space*/
-      .config("spark.memory.offHeap.enabled", true)
-      /*https://developer.ibm.com/hadoop/2016/07/18/troubleshooting-and-tuning-spark-for-heavy-workloads*/
       .config("spark.sql.broadcastTimeout", "1600")
       .config("spark.network.timeout", "1600")
       .config("spark.debug.maxToStringFields", 1000)

@@ -31,7 +31,7 @@ object Loader extends java.io.Serializable {
   def runSpark(): Unit = {
     val stringBuilder: java.lang.StringBuilder = new java.lang.StringBuilder
     val utils: Utils = new Utils()
-    /*local mac*/
+    /*local mac
     val sparkSession = SparkSession
       .builder()
       .master("local[*]")
@@ -53,29 +53,18 @@ object Loader extends java.io.Serializable {
       .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))
       .getOrCreate()
     val sc = sparkSession.sparkContext
-    val sql = sparkSession.sqlContext
+    val sql = sparkSession.sqlContext*/
 
-    /* val sparkSession = SparkSession
+    /**/ val sparkSession = SparkSession
       .builder()
-      .appName("spark-ccpa-" + sourceName + "-" + java.util.UUID.randomUUID())
+      .appName("spark-COVIDLoader-" + "-" + java.util.UUID.randomUUID())
       .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
       .config("spark.kryoserializer.buffer.max", 2047)
       .config("org.apache.spark.shuffle.sort.SortShuffleManager", "tungsten-sort")
       .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
       .config("spark.speculation", "false")
-      /*needs to have when merging a lot of small files*/
-      .config("spark.rpc.message.maxSize", 2047)
-      .config("spark.debug.maxToStringFields", 10000)
-      /*needs to have when merging a lot of small files*/
-      .config("spark.driver.memory", "120G")
-      .config("spark.executor.memory", "120G")
-      .config("spark.executor.memoryOverhead", "110G")
-      .config("spark.driver.memoryOverhead", "110G")
-      //.config("spark.debug.maxToStringFields", 500)
-      .config("spark.driver.maxResultSize", "120G")
       /*increase heap space https://stackoverflow.com/questions/21138751/spark-java-lang-outofmemoryerror-java-heap-space*/
       .config("spark.memory.offHeap.enabled", true)
-      .config("spark.memory.offHeap.size", "120g")
       /*https://developer.ibm.com/hadoop/2016/07/18/troubleshooting-and-tuning-spark-for-heavy-workloads*/
       .config("spark.sql.broadcastTimeout", "1600")
       .config("spark.network.timeout", "1600")
@@ -84,15 +73,15 @@ object Loader extends java.io.Serializable {
       .config("spark.sql.orc.enableVectorizedReader", "true")
       .config("spark.sql.caseSensitive", "true")
       .config("spark.port.maxRetries", 256)
-      //.config("spark.sql.session.timeZone", "UTC")
+      .config("spark.hadoop.fs.s3a.access.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/AccessKey"))
+      .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))
       .enableHiveSupport()
       .getOrCreate()
     sparkSession.sparkContext.setLogLevel("ERROR")
     val sc = sparkSession.sparkContext
-    val sql = sparkSession.sqlContext*/
+    val sql = sparkSession.sqlContext
 
     new Analysis().run(sparkSession, sc, sql, stringBuilder)
-
     new Utils(config.getPropValues("emails"), config.getPropValues("fromemails"),
       "ETL Notification " + " SPARK: COVID-19 Loader",
       stringBuilder.toString()).sendEMail()

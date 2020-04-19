@@ -1,3 +1,4 @@
+*.sh
 *.DS_Store
 *.properties
 *.jar
@@ -12,5 +13,6 @@
 *target/*
 *dependency-reduced-pom.xml*
 # MISC
-*EMR.sh*
+
+
 

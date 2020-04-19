@@ -1,4 +1,4 @@
-*.sh
+*EMR*
 *.DS_Store
 *.properties
 *.jar

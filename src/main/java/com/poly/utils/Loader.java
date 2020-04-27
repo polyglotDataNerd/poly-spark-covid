@@ -1,4 +1,4 @@
-package com.poly.Utils;
+package com.poly.utils;
 
 public class Loader {
 

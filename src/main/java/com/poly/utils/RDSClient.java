@@ -1,4 +1,4 @@
-package com.poly.Utils;
+package com.poly.utils;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class RDSClient implements Serializable {
-    private static final Logger log = LogManager.getLogger(com.poly.Utils.RDSClient.class);
+    private static final Logger log = LogManager.getLogger(com.poly.utils.RDSClient.class);
     private String host;
     private String uid;
     private String pw;

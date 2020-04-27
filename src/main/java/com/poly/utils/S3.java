@@ -1,8 +1,7 @@
-package com.poly.Utils;
+package com.poly.utils;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.iterable.S3Objects;
@@ -16,7 +15,7 @@ public class S3 implements Serializable {
 
     private String s3bucket;
     private String s3Key;
-    private static final Logger log = LogManager.getLogger(com.poly.Utils.S3.class);
+    private static final Logger log = LogManager.getLogger(com.poly.utils.S3.class);
     private StringBuilder stringBuilder;
     private String awsregion;
 

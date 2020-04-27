@@ -2,7 +2,7 @@ package com.poly.covid.sql
 
 import java.util.concurrent.TimeUnit
 
-import com.poly.Utils._
+import com.poly.utils._
 import com.poly.covid.utility._
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
 import org.apache.spark.SparkContext

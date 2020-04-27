@@ -1,4 +1,4 @@
-package com.poly.Utils;
+package com.poly.utils;
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.regions.Regions;

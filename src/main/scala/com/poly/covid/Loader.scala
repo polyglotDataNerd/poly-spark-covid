@@ -4,7 +4,7 @@ package com.poly.covid
 aws s3 cp ~/sg-spark-ccpa/ s3://polyglotDataNerd-bigdata-utility/spark/sg-spark-ccpa --recursive --sse  --include "*" --exclude "*.DS_Store*" --exclude "*.iml*" --exclude "*dependency-reduced-pom.xml"
 */
 
-import com.poly.Utils._
+import com.poly.utils._
 import com.poly.covid.sql.Analysis
 import org.apache.hadoop.yarn.util.RackResolver
 import org.apache.log4j.{Level, LogManager, Logger}

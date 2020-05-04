@@ -1,6 +1,6 @@
 package com.poly.covid.utility
 
-import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.{StructField, _}
 
 
 class Schemas extends Serializable {
@@ -44,6 +44,7 @@ class Schemas extends Serializable {
       StructField("tested", StringType, true),
       StructField("hospitalized", StringType, true),
       StructField("discharged", StringType, true),
+      StructField("icu", StringType, true),
       StructField("growthFactor", StringType, true),
       StructField("Last_Update", DateType, true)
     )
@@ -76,7 +77,8 @@ class Schemas extends Serializable {
       StructField("hospitalized", StringType, true),
       StructField("discharged", StringType, true),
       StructField("growth_factor", DoubleType, true),
-      StructField("last_updated", DateType, true)
+      StructField("last_updated", DateType, true),
+      StructField("icu", StringType, true)
     )
     )
   }

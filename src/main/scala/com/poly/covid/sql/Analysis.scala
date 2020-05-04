@@ -61,6 +61,7 @@ class Analysis extends java.io.Serializable {
           url,
           aggregate,
           timezone,
+          icu,
           sum(cases) cases,
           sum(deaths) deaths,
           sum(recovered) recovered,
@@ -84,6 +85,7 @@ class Analysis extends java.io.Serializable {
             url,
             aggregate,
             timezone,
+            icu,
             Last_Update
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER)
@@ -150,7 +152,8 @@ class Analysis extends java.io.Serializable {
                 a.hospitalized,
                 a.discharged,
                 a.growthFactor,
-                a.Last_Update
+                a.Last_Update,
+                a.icu
            from cds a left join jhu b
              on a.Last_Update = b.Last_Update
              and lower(trim(substring_index(a.county, ' ', 1))) = lower(trim(b.county))

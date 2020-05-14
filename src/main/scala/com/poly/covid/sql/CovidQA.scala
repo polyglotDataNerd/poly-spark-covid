@@ -116,7 +116,7 @@ class CovidQA {
         |                         state,
         |                         county,
         |                         cases,
-        |                         us_deaths_county as deaths,
+        |                         deaths as deaths,
         |                         recovered,
         |                         hospitalized,
         |                         discharged

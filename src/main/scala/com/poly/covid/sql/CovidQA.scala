@@ -116,7 +116,7 @@ class CovidQA {
         |                         state,
         |                         county,
         |                         cases,
-        |                         deaths as deaths,
+        |                         nvl(deaths,us_deaths_county) as deaths,
         |                         recovered,
         |                         hospitalized,
         |                         discharged

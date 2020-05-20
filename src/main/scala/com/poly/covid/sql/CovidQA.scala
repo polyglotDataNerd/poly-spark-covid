@@ -4,7 +4,8 @@ import java.util.concurrent.TimeUnit
 
 import com.poly.covid.utility.Schemas
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.sql.{SQLContext}
+import org.apache.spark.storage.StorageLevel
 
 class CovidQA {
 
@@ -14,37 +15,43 @@ class CovidQA {
   private val date = format.format(DateUtils.addDays(new java.util.Date(), -1))
   private val delim = "\n"
 
-  def runQA(sparkSession: SparkSession, sql: SQLContext, stringBuilder: java.lang.StringBuilder): Unit = {
+  def runQA(sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
     sw.start()
-    val df = sql
+    val df = sqlContext
       .read
+      .option("header", true)
       .option("delimiter", "\t")
       .option("quote", "\"")
       .option("escape", "\"")
       .schema(schemas.covidStruct())
       .csv("s3a://poly-testing/covid/combined/*")
       .distinct()
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
     df.createOrReplaceTempView("covid")
     println(df.count())
 
-    sql
+    sqlContext
       .read
+      .option("header", true)
       .schema(schemas.jhu())
       .csv("s3a://poly-testing/covid/jhu/transformed/*")
       .distinct()
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
       .createOrReplaceTempView("jhu")
 
-    sql
+    sqlContext
       .read
+      .option("header", true)
       .schema(schemas.cds())
       .csv("s3a://poly-testing/covid/cds/*")
       .distinct()
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
       .createOrReplaceTempView("cds")
 
-    import sql.implicits._
+    import sqlContext.implicits._
 
     stringBuilder.append(String.format("%s", "CDS")).append(delim)
-    sparkSession.sql(
+    sqlContext.sql(
       """
         select Last_Update as last_updated, count(distinct Last_Update||level||county||state||country) as cds_records
         |from cds
@@ -58,7 +65,7 @@ class CovidQA {
     stringBuilder.append(delim)
 
     stringBuilder.append(String.format("%s", "JHU")).append(delim)
-    sparkSession.sql(
+    sqlContext.sql(
       """
         select Last_Update as last_updated, count(distinct Last_Update||Combined_Key||admin||Province_State||Country_Region) as jhu_records
         |from jhu
@@ -73,7 +80,7 @@ class CovidQA {
 
     /* matches graph https://coronavirus.jhu.edu/map.html */
     stringBuilder.append(String.format("%s", "US DEATHS")).append(delim)
-    sparkSession.sql(
+    sqlContext.sql(
       """
         select Last_Update, format_number(sum(Deaths), 0) as us_deaths, format_number(sum(Confirmed), 0) us_affected
         |from jhu
@@ -88,7 +95,7 @@ class CovidQA {
     stringBuilder.append(delim)
 
     stringBuilder.append(String.format("%s", "Combined")).append(delim)
-    sparkSession.sql(
+    sqlContext.sql(
       """
         select last_updated, count(distinct last_updated||level||county||state||country) as combined_records
         |from covid
@@ -102,7 +109,7 @@ class CovidQA {
     stringBuilder.append(delim)
 
     stringBuilder.append(String.format("%s", "USA Summary")).append(delim)
-    sparkSession.sql(
+    sqlContext.sql(
       """
         |select last_updated,
         |       state,

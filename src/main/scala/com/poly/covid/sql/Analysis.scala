@@ -6,7 +6,7 @@ import com.poly.utils._
 import com.poly.covid.utility._
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.sql.{SQLContext}
 import org.apache.spark.storage.StorageLevel
 
 
@@ -18,24 +18,25 @@ class Analysis extends java.io.Serializable {
   val sw = new StopWatch
 
 
-  def run(sparkSession: SparkSession, sc: SparkContext, sql: SQLContext, stringBuilder: java.lang.StringBuilder): Unit = {
+  def run(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
     sw.start()
     val utils: SparkUtils = new SparkUtils(sc, stringBuilder)
     val schemas: Schemas = new Schemas
 
     try {
       /*imports functions*/
-      /**/ val jhu = sql
+      /**/ val jhu = sqlContext
         .read
         .schema(schemas.jhu())
         .csv("s3a://poly-testing/covid/jhu/transformed/*")
         .distinct()
+        .persist(StorageLevel.MEMORY_ONLY_SER_2)
       jhu.createOrReplaceTempView("jhuv")
       println(date + ": jhu count: " + jhu.count())
 
       /* only takes current day pull and not all files since the
       go pipeline takes current and history daily */
-      val cds = sql
+      val cds = sqlContext
         .read
         .option("quote", "\"")
         .option("escape", "\"")
@@ -43,10 +44,11 @@ class Analysis extends java.io.Serializable {
         .option("header", "true")
         .csv("s3a://poly-testing/covid/cds/" + date + "/*")
         .distinct()
+        .persist(StorageLevel.MEMORY_ONLY_SER_2)
       cds.createOrReplaceTempView("cdsv")
       println(date + ": cds count: " + cds.count())
 
-      sparkSession.sql(
+      sqlContext.sql(
         """
           select distinct
           name,
@@ -88,12 +90,12 @@ class Analysis extends java.io.Serializable {
             icu,
             Last_Update
           """.stripMargin
-      ).persist(StorageLevel.MEMORY_ONLY_SER)
+      ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("cds")
-      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_cds from cds""").show(1, false)
+      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_cds from cds""").show(1, false)
 
 
-      sparkSession.sql(
+      sqlContext.sql(
         """
           select distinct
           fips,
@@ -119,13 +121,13 @@ class Analysis extends java.io.Serializable {
             Longitude,
             Combined_Key
           """.stripMargin
-      ).persist(StorageLevel.MEMORY_ONLY_SER)
+      ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("jhu")
-      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_jhu from jhu""").show(1, false)
+      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_jhu from jhu""").show(1, false)
 
 
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
-      val combined = sparkSession.sql(
+      val combined = sqlContext.sql(
         """
             select distinct
                 a.name,
@@ -163,14 +165,14 @@ class Analysis extends java.io.Serializable {
       )
       combined.createOrReplaceTempView("combined")
       println(date + ": combined count: " + combined.count())
-      sparkSession.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
+      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
 
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))
 
       /* QA */
-      new CovidQA().runQA(sparkSession, sql, stringBuilder)
+      new CovidQA().runQA(sqlContext, stringBuilder)
     }
     catch {
       case e: Exception => {

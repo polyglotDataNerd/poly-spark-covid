@@ -29,7 +29,7 @@ object Loader extends java.io.Serializable {
   }
 
   def runSpark(): Unit = {
-    val stringBuilder: java.lang.StringBuilder = new java.lang.StringBuilder
+    val stringBuilder: java.lang.StringBuffer = new java.lang.StringBuffer
     val utils: Utils = new Utils()
     /*local mac
     val sparkSession = SparkSession
@@ -49,15 +49,20 @@ object Loader extends java.io.Serializable {
       .config("spark.mapreduce.output.fileoutputformat.compress.codec", "org.apache.hadoop.io.compress.GzipCodec")
       .config("spark.debug.maxToStringFields", "500")
       .config("spark.sql.caseSensitive", "false")
+      .config("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com")
       .config("spark.hadoop.fs.s3a.access.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/AccessKey"))
       .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))
       .getOrCreate()
-    val sc = sparkSession.sparkContext
-    val sql = sparkSession.sqlContext*/
+    val sparkContext = sparkSession.sparkContext
+    val sqlContext = sparkSession.sqlContext*/
 
     /**/ val sparkSession = SparkSession
       .builder()
-      .appName("spark-COVIDLoader-" + "-" + java.util.UUID.randomUUID())
+      .appName("spark-COVIDLoader" + "-" + java.util.UUID.randomUUID())
+      /* EMR 6.0.0 */
+      .config("yarn.node-labels.enabled", "true")
+      .config("yarn.node-labels.am.default-node-label-expression", "CORE")
+      /* EMR 6.0.0 */
       .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
       .config("spark.kryoserializer.buffer.max", 2047)
       .config("org.apache.spark.shuffle.sort.SortShuffleManager", "tungsten-sort")
@@ -76,10 +81,10 @@ object Loader extends java.io.Serializable {
       .enableHiveSupport()
       .getOrCreate()
     sparkSession.sparkContext.setLogLevel("ERROR")
-    val sc = sparkSession.sparkContext
-    val sql = sparkSession.sqlContext
+    val sparkContext = sparkSession.sparkContext
+    val sqlContext = sparkSession.sqlContext
 
-    new Analysis().run(sparkSession, sc, sql, stringBuilder)
+    new Analysis().run(sparkContext, sqlContext, stringBuilder)
     new Utils(config.getPropValues("emails"), config.getPropValues("fromemails"),
       "ETL Notification " + " SPARK: COVID-19 Loader",
       stringBuilder.toString()).sendEMail()

@@ -7,7 +7,7 @@ import com.amazonaws.services.simplesystemsmanagement.model.{GetParametersReques
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
 
-class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuilder) extends java.io.Serializable {
+class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extends java.io.Serializable {
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   val date = format.format(new java.util.Date())
   val partitions = Runtime.getRuntime.availableProcessors() * 9

@@ -49,6 +49,8 @@ object Loader extends java.io.Serializable {
       .config("spark.mapreduce.output.fileoutputformat.compress.codec", "org.apache.hadoop.io.compress.GzipCodec")
       .config("spark.debug.maxToStringFields", "500")
       .config("spark.sql.caseSensitive", "false")
+      .config("spark.hadoop.fs.s3a.multiobjectdelete.enable", "false")
+      .config("spark.hadoop.fs.s3a.fast.upload", "true")
       .config("fs.s3a.endpoint", "s3.us-west-2.amazonaws.com")
       .config("spark.hadoop.fs.s3a.access.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/AccessKey"))
       .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))

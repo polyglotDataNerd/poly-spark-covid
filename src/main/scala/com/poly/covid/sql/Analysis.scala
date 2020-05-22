@@ -1,5 +1,6 @@
 package com.poly.covid.sql
 
+import java.net.URI
 import java.util.concurrent.TimeUnit
 
 import com.poly.utils._
@@ -171,9 +172,9 @@ class Analysis extends java.io.Serializable {
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
 
       /* rename spark output file */
-      val fs = FileSystem.get(sc.hadoopConfiguration)
-      val fileName = fs.globStatus(new Path("poly-testing/covid/combined/part*"))(0).getPath.getName
-      fs.rename(new Path(fileName),new Path("poly-testing/covid/combined/covid19_combined.gz"))
+      val fs = FileSystem.get(new URI(s"s3a://poly-testing"), sc.hadoopConfiguration)
+      val fileName = fs.globStatus(new Path("s3a://poly-testing/covid/combined/part*"))(0).getPath.getName.trim
+      fs.rename(new Path("s3a://poly-testing/covid/combined/" + fileName), new Path("s3a://poly-testing/covid/combined/covid19_combined.gz"))
 
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))

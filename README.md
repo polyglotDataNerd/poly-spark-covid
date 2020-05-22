@@ -25,7 +25,7 @@ Output
 * Refer to [Readme.md](/output)
 * Made s3 prefix public to download individual source files along with combined sources
     - All objects are compressed in GZIP format
-    - [Sample Link](https://poly-testing.s3-us-west-2.amazonaws.com/covid/combined/covid19_combined.gz)
+    - [Download Consolidated Dataset](https://poly-testing.s3-us-west-2.amazonaws.com/covid/combined/covid19_combined.gz)
 
             -Johns Hopkins
             aws s3 ls s3://poly-testing/covid/jhu  --recursive

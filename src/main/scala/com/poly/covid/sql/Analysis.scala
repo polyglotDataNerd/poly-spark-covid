@@ -5,8 +5,9 @@ import java.util.concurrent.TimeUnit
 import com.poly.utils._
 import com.poly.covid.utility._
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{SQLContext}
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.storage.StorageLevel
 
 
@@ -168,6 +169,10 @@ class Analysis extends java.io.Serializable {
       sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
 
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
+      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val fileName = fs.globStatus(new Path("poly-testing/covid/combined/part*"))(0).getPath.getName
+      fs.rename(new Path(fileName),new Path("poly-testing/covid/combined/covid19_combined.gz"))
+
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))
 

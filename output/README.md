@@ -61,7 +61,7 @@ Output Sample Query Result Sets
         
        Deaths
 		+-----------+---------+-----------+
-		|Last_Update|us_deaths|us_affected|
+		|last_updated|us_deaths|us_affected|
 		+-----------+---------+-----------+
 		|2020-05-22 |94,702   |1,577,147  |
 		|2020-05-21 |93,439   |1,551,853  |

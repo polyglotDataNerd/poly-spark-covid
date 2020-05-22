@@ -34,83 +34,115 @@ Output Fields
 Output Sample Query Result Sets
 -
 * Refer to compress gzip in the directory
+        
+       Corona Data Scraper    
+        +------------+-----------+
+		|last_updated|cds_records|
+		+------------+-----------+
+		|2020-05-01  |3165       |
+		|2020-04-30  |3154       |
+		|2020-04-29  |3156       |
+		|2020-04-28  |3145       |
+		|2020-04-27  |3135       |
+		+------------+-----------+
+		only showing top 5 rows
+        
+       Johns Hopkins University
+		+------------+-----------+
+		|last_updated|jhu_records|
+		+------------+-----------+
+		|2020-05-22  |2995       |
+		|2020-05-21  |2993       |
+		|2020-05-20  |2987       |
+		|2020-05-19  |2982       |
+		|2020-05-18  |2981       |
+		+------------+-----------+
+		only showing top 5 rows
+        
+       Deaths
+		+-----------+---------+-----------+
+		|Last_Update|us_deaths|us_affected|
+		+-----------+---------+-----------+
+		|2020-05-22 |94,702   |1,577,147  |
+		|2020-05-21 |93,439   |1,551,853  |
+		|2020-05-20 |91,921   |1,528,568  |
+		|2020-05-19 |90,347   |1,508,308  |
+		|2020-05-18 |89,562   |1,486,757  |
+		|2020-05-17 |88,754   |1,467,820  |
+		|2020-05-16 |87,530   |1,442,824  |
+		|2020-05-15 |85,898   |1,417,774  |
+		|2020-05-14 |84,119   |1,390,406  |
+		|2020-05-13 |82,376   |1,369,574  |
+		|2020-05-12 |80,682   |1,347,881  |
+		|2020-05-11 |79,526   |1,329,260  |
+		|2020-05-10 |78,795   |1,309,550  |
+		+-----------+---------+-----------+
+		only showing top 15 rows
+        
+       Consolidated
+		+------------+----------------+
+		|last_updated|combined_records|
+		+------------+----------------+
+		|2020-05-21  |3078            |
+		|2020-05-20  |3077            |
+		|2020-05-19  |3074            |
+		|2020-05-18  |3068            |
+		|2020-05-17  |3066            |
+		+------------+----------------+
+		only showing top 5 rows
 
-        CDS
-        2020-05-03      3172
-        2020-05-02      3167
-        2020-05-01      3166
-        2020-04-30      3154
-        2020-04-29      3156
-        
-        JHU
-        2020-05-04      2924
-        2020-05-03      2920
-        2020-05-02      2916
-        2020-05-01      2905
-        2020-04-29      2893
-        
-        US DEATHS
-        2020-05-04      67,682  1,158,026
-        2020-05-03      66,369  1,132,539
-        2020-05-02      64,943  1,103,461
-        2020-05-01      62,996  1,069,424
-        2020-04-29      58,355  1,012,582
-        
-        Combined
-        2020-05-03      3172
-        2020-05-02      3167
-        2020-05-01      3166
-        2020-04-30      3154
-        2020-04-29      3156
-        
-        USA Summary
-        2020-05-03      New York        316,415 5,707   null    null    null
-        2020-05-03      New Jersey      126,103 7,719   null    null    null
-        2020-05-03      Massachusetts   67,106  3,841   null    null    null
-        2020-05-03      Illinois        61,242  2,516   null    null    null
-        2020-05-03      California      54,865  478     5,584   6,269   null
-        2020-05-03      Pennsylvania    49,267  2,695   null    null    null
-        2020-05-03      Michigan        41,783  3,946   null    null    null
-        2020-05-03      Florida 36,066  1,125   null    null    null
-        2020-05-03      Texas   31,548  811     null    null    null
-        2020-05-03      Louisiana       29,277  1,748   null    null    null
-        2020-05-03      Connecticut     28,975  1,827   null    null    null
-        2020-05-03      Georgia 26,918  1,162   null    5,300   null
-        2020-05-03      Maryland        25,462  801     null    null    null
-        2020-05-03      Ohio    19,914  1,022   null    null    null
-        2020-05-03      Virginia        18,671  668     null    2,627   null
-        2020-05-03      Colorado        16,393  751     null    null    null
-        2020-05-03      Washington      15,122  830     null    null    null
-        2020-05-03      Tennessee       12,748  208     5,675   null    null
-        2020-05-03      Indiana 12,438  1,095   null    null    null
-        2020-05-03      North Carolina  11,663  428     null    null    null
-        2020-05-03      Iowa    9,045   161     null    null    null
-        2020-05-03      Arizona 8,640   327     null    null    null
-        2020-05-03      Missouri        8,490   74      1,295   null    null
-        2020-05-03      Wisconsin       7,964   331     null    null    null
-        2020-05-03      Alabama 7,888   288     null    null    null
-        2020-05-03      Mississippi     7,550   270     null    null    null
-        2020-05-03      Minnesota       6,643   381     null    null    null
-        2020-05-03      South Carolina  6,626   267     null    null    null
-        2020-05-03      Utah    5,988   12      null    null    null
-        2020-05-03      Nebraska        5,599   67      null    469     null
-        2020-05-03      Nevada  5,439   251     null    null    null
-        2020-05-03      Rhode Island    5,343   0       null    null    null
-        2020-05-03      Kentucky        5,189   248     1,702   null    null
-        2020-05-03      Delaware        5,185   92      null    null    null
-        2020-05-03      Kansas  5,030   142     null    null    null
-        2020-05-03      Oklahoma        3,885   236     2,606   null    null
-        2020-05-03      New Mexico      3,732   85      null    null    null
-        2020-05-03      Arkansas        3,257   70      1,942   null    null
-        2020-05-03      Oregon  2,680   109     null    null    null
-        2020-05-03      South Dakota    2,588   21      null    null    null
-        2020-05-03      New Hampshire   2,499   60      null    null    null
-        2020-05-03      Idaho   2,062   35      null    null    null
-        2020-05-03      North Dakota    1,191   19      null    null    null
-        2020-05-03      West Virginia   1,186   48      null    null    null
-        2020-05-03      Maine   1,185   56      706     null    null
-        2020-05-03      Vermont 893     51      null    null    null
-        2020-05-03      Hawaii  611     16      null    null    null
-        2020-05-03      Wyoming 586     1       null    null    null
-        2020-05-03      Alaska  363     6       null    null    null
-        2020-05-03      Montana 332     16      null    null    null
+       USA
+		+------------+--------------+--------+------+---------+------------+----------+
+		|last_updated|state         |infected|deaths|recovered|hospitalized|discharged|
+		+------------+--------------+--------+------+---------+------------+----------+
+		|2020-05-21  |New York      |356,458 |7,700 |null     |null        |null      |
+		|2020-05-21  |New Jersey    |150,446 |10,843|null     |null        |null      |
+		|2020-05-21  |Illinois      |102,512 |4,606 |null     |null        |null      |
+		|2020-05-21  |Massachusetts |89,780  |6,145 |null     |null        |null      |
+		|2020-05-21  |California    |88,323  |3,599 |11,628   |7,847       |null      |
+		|2020-05-21  |Pennsylvania  |65,392  |4,869 |null     |null        |null      |
+		|2020-05-21  |Texas         |52,183  |1,439 |null     |null        |null      |
+		|2020-05-21  |Michigan      |50,074  |5,064 |null     |null        |null      |
+		|2020-05-21  |Florida       |48,593  |2,144 |null     |null        |null      |
+		|2020-05-21  |Maryland      |42,434  |2,049 |null     |null        |null      |
+		|2020-05-21  |Connecticut   |39,014  |3,580 |null     |null        |null      |
+		|2020-05-21  |Georgia       |36,505  |1,747 |null     |7,126       |null      |
+		|2020-05-21  |Louisiana     |36,426  |2,506 |null     |null        |null      |
+		|2020-05-21  |Virginia      |32,909  |1,074 |null     |null        |null      |
+		|2020-05-21  |Ohio          |30,167  |1,837 |null     |null        |null      |
+		|2020-05-21  |Colorado      |23,100  |1,309 |null     |null        |null      |
+		|2020-05-21  |North Carolina|20,859  |716   |null     |null        |null      |
+		|2020-05-21  |Washington    |19,051  |1,044 |null     |null        |null      |
+		|2020-05-21  |Tennessee     |18,425  |305   |null     |null        |null      |
+		|2020-05-21  |Iowa          |15,946  |400   |null     |null        |null      |
+		|2020-05-21  |Arizona       |15,315  |745   |null     |null        |null      |
+		|2020-05-21  |Wisconsin     |13,885  |487   |null     |null        |null      |
+		|2020-05-21  |Alabama       |13,414  |529   |null     |null        |null      |
+		|2020-05-21  |Minnesota     |12,464  |760   |null     |null        |null      |
+		|2020-05-21  |Indiana       |12,438  |691   |null     |null        |null      |
+		|2020-05-21  |Mississippi   |12,222  |580   |null     |null        |null      |
+		|2020-05-21  |Rhode Island  |11,800  |425   |null     |null        |null      |
+		|2020-05-21  |Nebraska      |11,253  |141   |null     |626         |null      |
+		|2020-05-21  |South Carolina|9,379   |416   |null     |null        |null      |
+		|2020-05-21  |Utah          |9,190   |20    |null     |null        |null      |
+		|2020-05-21  |Kansas        |8,539   |202   |null     |null        |null      |
+		|2020-05-21  |Kentucky      |8,450   |393   |4,289    |null        |null      |
+		|2020-05-21  |Nevada        |7,313   |372   |780      |58          |111       |
+		|2020-05-21  |Missouri      |7,015   |287   |2,017    |null        |null      |
+		|2020-05-21  |New Mexico    |6,317   |283   |null     |null        |null      |
+		|2020-05-21  |Delaware      |5,909   |202   |null     |null        |null      |
+		|2020-05-21  |Oklahoma      |5,561   |301   |4,265    |null        |null      |
+		|2020-05-21  |Arkansas      |5,307   |110   |3,802    |null        |null      |
+		|2020-05-21  |South Dakota  |4,177   |46    |null     |null        |null      |
+		|2020-05-21  |New Hampshire |3,854   |190   |null     |null        |null      |
+		|2020-05-21  |Oregon        |3,817   |145   |null     |null        |null      |
+		|2020-05-21  |Idaho         |2,506   |77    |null     |null        |null      |
+		|2020-05-21  |North Dakota  |2,229   |40    |null     |null        |null      |
+		|2020-05-21  |Maine         |1,874   |73    |1,145    |null        |null      |
+		|2020-05-21  |West Virginia |1,567   |69    |null     |null        |null      |
+		|2020-05-21  |Vermont       |945     |54    |null     |null        |null      |
+		|2020-05-21  |Wyoming       |801     |1     |null     |null        |null      |
+		|2020-05-21  |Hawaii        |637     |17    |null     |null        |null      |
+		|2020-05-21  |Alaska        |401     |9     |null     |null        |null      |
+		|2020-05-21  |Montana       |332     |16    |null     |null        |null      |
+		+------------+--------------+--------+------+---------+------------+----------+

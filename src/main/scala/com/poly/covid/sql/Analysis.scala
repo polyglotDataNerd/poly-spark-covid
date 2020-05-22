@@ -169,6 +169,8 @@ class Analysis extends java.io.Serializable {
       sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
 
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
+
+      /* rename spark output file */
       val fs = FileSystem.get(sc.hadoopConfiguration)
       val fileName = fs.globStatus(new Path("poly-testing/covid/combined/part*"))(0).getPath.getName
       fs.rename(new Path(fileName),new Path("poly-testing/covid/combined/covid19_combined.gz"))

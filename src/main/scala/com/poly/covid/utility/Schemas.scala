@@ -43,10 +43,12 @@ class Schemas extends Serializable {
       StructField("active", StringType, true),
       StructField("tested", StringType, true),
       StructField("hospitalized", StringType, true),
+      StructField("hospitalized_current", StringType, true),
       StructField("discharged", StringType, true),
       StructField("icu", StringType, true),
+      StructField("icu_current", StringType, true),
       StructField("growthFactor", StringType, true),
-      StructField("Last_Update", DateType, true)
+      StructField("last_updated", DateType, true)
     )
     )
   }

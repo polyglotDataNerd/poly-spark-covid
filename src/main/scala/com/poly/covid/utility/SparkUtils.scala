@@ -5,7 +5,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementClientBuilder
 import com.amazonaws.services.simplesystemsmanagement.model.{GetParametersRequest, GetParametersResult}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.sql.{DataFrame, SaveMode}
 
 class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extends java.io.Serializable {
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
@@ -39,7 +39,7 @@ class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extend
         .mode(SaveMode.Overwrite)
         .format("csv")
         .option("delimiter", "\t")
-        .option("header", "false")
+        .option("header", "true")
         .option("quoteAll", "true")
         .option("codec", "org.apache.hadoop.io.compress.GzipCodec")
         .save(target)

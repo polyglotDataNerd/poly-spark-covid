@@ -53,7 +53,7 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "CDS")).append(delim)
     sqlContext.sql(
       """
-        select Last_Update as last_updated, count(distinct Last_Update||level||county||state||country) as cds_records
+        select last_updated as last_updated, count(distinct last_updated||level||county||state||country) as cds_records
         |from cds
         |group by 1
         |order by 1 desc
@@ -67,7 +67,7 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "JHU")).append(delim)
     sqlContext.sql(
       """
-        select Last_Update as last_updated, count(distinct Last_Update||Combined_Key||admin||Province_State||Country_Region) as jhu_records
+        select last_updated as last_updated, count(distinct last_updated||Combined_Key||admin||Province_State||Country_Region) as jhu_records
         |from jhu
         |group by 1
         |order by 1 desc
@@ -82,7 +82,7 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "US DEATHS")).append(delim)
     sqlContext.sql(
       """
-        select Last_Update, format_number(sum(Deaths), 0) as us_deaths, format_number(sum(Confirmed), 0) us_affected
+        select last_updated, format_number(sum(Deaths), 0) as us_deaths, format_number(sum(Confirmed), 0) us_affected
         |from jhu
         where Country_Region = 'US'
         |group by 1

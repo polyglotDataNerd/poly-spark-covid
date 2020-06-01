@@ -77,7 +77,7 @@ class Analysis extends java.io.Serializable {
           sum(discharged) discharged,
           max(growthFactor) growthFactor,
           last_updated
-          from cdsv
+         from cdsv
           group by
             name,
             level,
@@ -94,11 +94,11 @@ class Analysis extends java.io.Serializable {
             icu,
             last_updated,
             hospitalized_current,
-            icu_current,
+            icu_current
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("cds")
-      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_cds from cds""").show(1, false)
+      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_cds from cds""").show(1, false)
 
 
       sqlContext.sql(
@@ -108,7 +108,7 @@ class Analysis extends java.io.Serializable {
           admin as county,
           Province_State,
           Country_Region,
-          Last_Update,
+          last_updated,
           Latitude,
           Longitude,
           sum(Confirmed) Confirmed,
@@ -116,20 +116,20 @@ class Analysis extends java.io.Serializable {
           sum(Recovered) Recovered,
           sum(Active) Active,
           Combined_Key
-          from jhuv
+         from jhuv
           group by
             fips,
             admin,
             Province_State,
             Country_Region,
-            Last_Update,
+            last_updated,
             Latitude,
             Longitude,
             Combined_Key
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("jhu")
-      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_jhu from jhu""").show(1, false)
+      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_jhu from jhu""").show(1, false)
 
 
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
@@ -165,7 +165,7 @@ class Analysis extends java.io.Serializable {
                 a.hospitalized_current,
                 a.icu_current
            from cds a left join jhu b
-             on a.Last_Update = b.Last_Update
+             on a.last_updated = b.last_updated
              and lower(trim(substring_index(a.county, ' ', 1))) = lower(trim(b.county))
              and lower(trim(a.state)) = lower(trim(b.Province_State))
            order by country DESC, city ASC
@@ -173,7 +173,7 @@ class Analysis extends java.io.Serializable {
       )
       combined.createOrReplaceTempView("combined")
       println(date + ": combined count: " + combined.count())
-      sqlContext.sql("""select max(cast(Last_Update as date)) latest_update_combined from combined""").show(1, false)
+      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_combined from combined""").show(1, false)
 
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
 

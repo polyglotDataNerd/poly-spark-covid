@@ -11,7 +11,7 @@ class Schemas extends Serializable {
       StructField("admin", StringType, true),
       StructField("Province_State", StringType, true),
       StructField("Country_Region", StringType, true),
-      StructField("Last_Update", DateType, true),
+      StructField("last_updated", DateType, true),
       StructField("Latitude", DoubleType, true),
       StructField("Longitude", DoubleType, true),
       StructField("Confirmed", StringType, true),

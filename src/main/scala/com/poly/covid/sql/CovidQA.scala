@@ -28,7 +28,7 @@ class CovidQA {
       .distinct()
       .persist(StorageLevel.MEMORY_ONLY_SER_2)
     df.createOrReplaceTempView("covid")
-    println(df.count())
+    println(df.collect().size)
 
     sqlContext
       .read
@@ -58,6 +58,7 @@ class CovidQA {
         |group by 1
         |order by 1 desc
         |""".stripMargin)
+      .persist(StorageLevel.MEMORY_ONLY)
       .take(5)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)
@@ -72,6 +73,7 @@ class CovidQA {
         |group by 1
         |order by 1 desc
         |""".stripMargin)
+      .persist(StorageLevel.MEMORY_ONLY)
       .take(5)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)
@@ -88,6 +90,7 @@ class CovidQA {
         |group by 1
         |order by 1 desc
         |""".stripMargin)
+      .persist(StorageLevel.MEMORY_ONLY)
       .take(5)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)
@@ -102,6 +105,7 @@ class CovidQA {
         |group by 1
         |order by 1 desc
         |""".stripMargin)
+      .persist(StorageLevel.MEMORY_ONLY)
       .take(5)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)
@@ -134,6 +138,7 @@ class CovidQA {
         |group by 1,2
         |order by sum(cases) desc, state desc, last_updated desc
         |""".stripMargin)
+      .persist(StorageLevel.MEMORY_ONLY)
       .filter($"last_updated" === date)
       .take(500)
       .foreach(v => {

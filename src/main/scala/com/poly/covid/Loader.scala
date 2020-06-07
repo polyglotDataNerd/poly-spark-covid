@@ -4,10 +4,10 @@ package com.poly.covid
 aws s3 cp ~/sg-spark-ccpa/ s3://polyglotDataNerd-bigdata-utility/spark/sg-spark-ccpa --recursive --sse  --include "*" --exclude "*.DS_Store*" --exclude "*.iml*" --exclude "*dependency-reduced-pom.xml"
 */
 
-import com.poly.utils._
 import com.poly.covid.sql.Analysis
+import com.poly.utils._
 import org.apache.hadoop.yarn.util.RackResolver
-import org.apache.log4j.{Level, LogManager, Logger}
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 
 
@@ -67,6 +67,8 @@ object Loader extends java.io.Serializable {
       /* EMR 6.0.0 */
       .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
       .config("spark.kryoserializer.buffer.max", 2047)
+      /* explicitly decreases shuffle */
+      .config("spark.sql.shuffle.partitions", "10")
       .config("org.apache.spark.shuffle.sort.SortShuffleManager", "tungsten-sort")
       .config("spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version", "2")
       .config("spark.speculation", "false")

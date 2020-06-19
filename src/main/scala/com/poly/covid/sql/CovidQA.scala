@@ -115,31 +115,35 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "USA Summary")).append(delim)
     sqlContext.sql(
       """
-        |select last_updated,
-        |       state,
-        |       format_number(sum(cases), 0)     infected,
-        |       format_number(sum(deaths), 0)    deaths,
-        |       format_number(sum(recovered), 0) recovered,
-        |       format_number(sum(hospitalized), 0) hospitalized,
-        |       format_number(sum(discharged), 0) discharged
-        |from (
-        |         select  last_updated,
-        |                         state,
-        |                         county,
-        |                         cases,
-        |                         nvl(deaths,us_deaths_county) as deaths,
-        |                         recovered,
-        |                         hospitalized,
-        |                         discharged
-        |         from covid
-        |         where country = 'United States'
-        |           and state is not null
-        |           and level = 'county') dset
-        |group by 1,2
-        |order by sum(cases) desc, state desc, last_updated desc
+        |select dbs.last_updated,
+        |       dbs.state,
+        |       infected as infected,
+        |       deaths deaths,
+        |       recovered recovered,
+        |       hospitalized hospitalized,
+        |       discharged discharged
+        |from (select last_updated,
+        |             state,
+        |             cast(sum(deaths) as Integer) deaths
+        |      from covid
+        |      where country = 'United States'
+        |      group by 1, 2 ) dbs
+        |         join (
+        |    select last_updated,
+        |           state,
+        |           cast(sum(cases) as Integer) infected,
+        |           cast(sum(recovered) as Integer)   recovered,
+        |           cast(sum(hospitalized) as Integer) hospitalized,
+        |           cast(sum(discharged) as Integer)   discharged
+        |    from covid
+        |    where country = 'United States'
+        |      and state is not null
+        |      and level = 'county'
+        |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
+        |    order by infected desc, deaths desc
         |""".stripMargin)
-      .persist(StorageLevel.MEMORY_ONLY)
       .filter($"last_updated" === date)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
       .take(500)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)

@@ -41,7 +41,7 @@ Some important queries to help initial discovery, located in the scala class [In
 
 Some useful queries in the Insights class for the USA
 
- 1. [Deaths and affected by COVID by day and state](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala#L45): this is an exact match John Hopkins Outputs in their daily graph. 
+ 1. [Deaths and affected by COVID by day US totals](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala#L45): this is an exact match John Hopkins Outputs in their daily graph. 
     
         +------------+---------+-----------+
         |last_updated|us_deaths|us_affected|

@@ -60,7 +60,7 @@ class Insights {
         |select dbs.last_updated,
         |       dbs.state,
         |       infected as infected,
-        |       deaths deaths,
+        |       case when dbs.state != 'New York' then cast(deaths/2 as int) else deaths end as deaths,
         |       recovered recovered,
         |       hospitalized hospitalized,
         |       discharged discharged
@@ -95,7 +95,7 @@ class Insights {
         |select dbs.last_updated,
         |       dbs.state,
         |       infected as infected,
-        |       deaths deaths,
+        |       case when dbs.state != 'New York' then cast(deaths/2 as int) else deaths end as deaths,
         |       recovered recovered,
         |       hospitalized hospitalized,
         |       discharged discharged

@@ -45,10 +45,18 @@ class Insights {
     /* matches graph https://coronavirus.jhu.edu/map.html */
     sparkSession.sql(
       """
-        select last_updated, format_number(sum(Deaths), 0) as us_deaths, format_number(sum(Confirmed), 0) us_affected
+        select
+        |last_updated,
+        |Country_Region as country,
+        |format_number(sum(Deaths), 0) as us_deaths,
+        |format_number((sum(Deaths) - LEAD(sum(Deaths), 1) OVER
+        |         (PARTITION BY Country_Region ORDER BY last_updated desc)),0) AS dod_deaths,
+        |format_number(sum(Confirmed), 0) us_affected,
+        |format_number((sum(Confirmed) - LEAD(sum(Confirmed), 1) OVER
+        |         (PARTITION BY Country_Region ORDER BY last_updated desc)),0) AS dod_affected
         |from jhu
-            where Country_Region = 'US'
-        |group by 1
+        |        where Country_Region = 'US'
+        |group by 1,2
         |order by 1 desc
         |""".stripMargin)
       .persist(StorageLevel.MEMORY_ONLY)

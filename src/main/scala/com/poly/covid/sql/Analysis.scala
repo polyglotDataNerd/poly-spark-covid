@@ -21,6 +21,7 @@ class Analysis extends java.io.Serializable {
 
 
   def run(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
+    sc.setCheckpointDir("/tmp/checkpoints")
     sw.start()
     val utils: SparkUtils = new SparkUtils(sc, stringBuilder)
     val schemas: Schemas = new Schemas
@@ -186,7 +187,7 @@ class Analysis extends java.io.Serializable {
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))
 
       /* QA */
-      new CovidQA().runQA(sqlContext, stringBuilder)
+      new CovidQA().runQA(sc, sqlContext, stringBuilder)
     }
     catch {
       case e: Exception => {

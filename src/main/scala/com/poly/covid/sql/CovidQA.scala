@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import com.poly.covid.utility.Schemas
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{format_number, lead}
@@ -17,7 +18,9 @@ class CovidQA {
   private val date = format.format(DateUtils.addDays(new java.util.Date(), -1))
   private val delim = "\n"
 
-  def runQA(sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
+  def runQA(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
+
+
     sw.start()
     val df = sqlContext
       .read
@@ -88,19 +91,20 @@ class CovidQA {
       """
         select
         |last_updated,
+        |Country_Region as country,
         |format_number(sum(Deaths), 0) as us_deaths,
         |format_number((sum(Deaths) - LEAD(sum(Deaths), 1) OVER
-        |         (PARTITION BY last_updated ORDER BY last_updated desc)),0) AS dod_deaths,
+        |         (PARTITION BY Country_Region ORDER BY last_updated desc)),0) AS dod_deaths,
         |format_number(sum(Confirmed), 0) us_affected,
         |format_number((sum(Confirmed) - LEAD(sum(Confirmed), 1) OVER
-        |         (PARTITION BY last_updated ORDER BY last_updated desc)),0) AS dod_affected
+        |         (PARTITION BY Country_Region ORDER BY last_updated desc)),0) AS dod_affected
         |from jhu
         where Country_Region = 'US'
-        |group by 1
+        |group by 1,2
         |order by 1 desc
         |""".stripMargin)
-      .persist(StorageLevel.MEMORY_ONLY)
-      .take(5)
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+      .take(10)
       .foreach(v => {
         stringBuilder.append(v.mkString("\t")).append(delim)
       })
@@ -215,6 +219,8 @@ class CovidQA {
           .foreach(v => {
             stringBuilder.append(v.mkString("\t")).append(delim)
           })
+        dod.checkpoint()
+        stringBuilder.append(delim)
       }
       ))
 

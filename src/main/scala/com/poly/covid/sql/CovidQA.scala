@@ -4,7 +4,9 @@ import java.util.concurrent.TimeUnit
 
 import com.poly.covid.utility.Schemas
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
-import org.apache.spark.sql.{SQLContext}
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions.{format_number, lead}
 import org.apache.spark.storage.StorageLevel
 
 class CovidQA {
@@ -84,7 +86,14 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "US DEATHS")).append(delim)
     sqlContext.sql(
       """
-        select last_updated, format_number(sum(Deaths), 0) as us_deaths, format_number(sum(Confirmed), 0) us_affected
+        select
+        |last_updated,
+        |format_number(sum(Deaths), 0) as us_deaths,
+        |format_number((sum(Deaths) - LEAD(sum(Deaths), 1) OVER
+        |         (PARTITION BY last_updated ORDER BY last_updated desc)),0) AS dod_deaths,
+        |format_number(sum(Confirmed), 0) us_affected,
+        |format_number((sum(Confirmed) - LEAD(sum(Confirmed), 1) OVER
+        |         (PARTITION BY last_updated ORDER BY last_updated desc)),0) AS dod_affected
         |from jhu
         where Country_Region = 'US'
         |group by 1
@@ -113,7 +122,47 @@ class CovidQA {
     stringBuilder.append(delim)
 
     stringBuilder.append(String.format("%s", "USA Summary")).append(delim)
+    /* all state by day */
     sqlContext.sql(
+      """
+        |select dbs.last_updated,
+        |       dbs.state,
+        |       infected,
+        |       case when dbs.state != 'New York' then cast(deaths/2 as int) else deaths end as deaths,
+        |       format_number(recovered, 0) as recovered,
+        |       format_number(hospitalized, 0) as hospitalized,
+        |       format_number(discharged, 0) as  discharged
+        |from (select last_updated,
+        |             state,
+        |             cast(sum(deaths) as Integer) deaths
+        |      from covid
+        |      where country = 'United States'
+        |      group by 1, 2 ) dbs
+        |         join (
+        |    select last_updated,
+        |           state,
+        |           cast(sum(cases) as Integer) infected,
+        |           cast(sum(recovered) as Integer)   recovered,
+        |           cast(sum(hospitalized) as Integer) hospitalized,
+        |           cast(sum(discharged) as Integer)   discharged
+        |    from covid
+        |    where country = 'United States'
+        |      and state is not null
+        |      and level = 'county'
+        |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
+        |    order by infected desc, deaths desc
+        |""".stripMargin)
+      .filter($"last_updated" === date)
+      .select($"last_updated", $"state", format_number($"infected", 0).as("infected"), format_number($"deaths", 0).as("deaths"), $"recovered", $"hospitalized", $"discharged")
+      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
+      .take(500)
+      .foreach(v => {
+        stringBuilder.append(v.mkString("\t")).append(delim)
+      })
+    stringBuilder.append(delim)
+
+    /* state by state Day over Day */
+    val dod = sqlContext.sql(
       """
         |select dbs.last_updated,
         |       dbs.state,
@@ -140,15 +189,36 @@ class CovidQA {
         |      and state is not null
         |      and level = 'county'
         |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
-        |    order by infected desc, deaths desc
         |""".stripMargin)
-      .filter($"last_updated" === date)
-      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-      .take(500)
-      .foreach(v => {
-        stringBuilder.append(v.mkString("\t")).append(delim)
-      })
-    stringBuilder.append(delim)
+      .withColumn("dod_infected",
+        $"infected" -
+          (lead($"infected", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"infected".desc, $"deaths".desc)))
+      .withColumn("dod_deaths",
+        $"deaths" -
+          (lead($"deaths", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"infected".desc, $"deaths".desc)))
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+
+    dod
+      .select($"state")
+      .distinct()
+      .collect().map(_.toSeq
+      .foreach(x => {
+        dod
+          .select($"last_updated", $"state",
+            format_number($"infected", 0).as("infected"),
+            format_number($"dod_infected", 0).as("dod_infected"),
+            format_number($"deaths", 0).as("deaths"),
+            format_number($"dod_deaths", 0).as("dod_deaths"))
+          .filter($"state" === x.toString())
+          .orderBy($"last_updated".desc)
+          .take(25)
+          .foreach(v => {
+            stringBuilder.append(v.mkString("\t")).append(delim)
+          })
+      }
+      ))
+
+
     sw.stop()
     stringBuilder.append("INFO QA process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS) + "\n")
   }

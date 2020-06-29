@@ -30,8 +30,9 @@ class CovidQA {
       .option("escape", "\"")
       .schema(schemas.covidStruct())
       .csv("s3a://poly-testing/covid/combined/*")
+      .coalesce(1)
       .distinct()
-      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
     df.createOrReplaceTempView("covid")
     println(df.collect().size)
 
@@ -40,8 +41,9 @@ class CovidQA {
       .option("header", true)
       .schema(schemas.jhu())
       .csv("s3a://poly-testing/covid/jhu/transformed/*")
+      .coalesce(1)
       .distinct()
-      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
       .createOrReplaceTempView("jhu")
 
     sqlContext
@@ -49,8 +51,9 @@ class CovidQA {
       .option("header", true)
       .schema(schemas.cds())
       .csv("s3a://poly-testing/covid/cds/*")
+      .coalesce(1)
       .distinct()
-      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
       .createOrReplaceTempView("cds")
 
     import sqlContext.implicits._

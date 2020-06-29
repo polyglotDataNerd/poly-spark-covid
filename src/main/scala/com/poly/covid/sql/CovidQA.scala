@@ -219,7 +219,7 @@ class CovidQA {
           .foreach(v => {
             stringBuilder.append(v.mkString("\t")).append(delim)
           })
-        dod.checkpoint()
+        // dod.checkpoint()
         stringBuilder.append(delim)
       }
       ))

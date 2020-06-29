@@ -35,7 +35,6 @@ class Analysis extends java.io.Serializable {
         .distinct()
         .persist(StorageLevel.MEMORY_ONLY_SER_2)
       jhu.createOrReplaceTempView("jhuv")
-      println(date + ": jhu count: " + jhu.collect().size)
 
       /* only takes current day pull and not all files since the
       go pipeline takes current and history daily */
@@ -49,7 +48,6 @@ class Analysis extends java.io.Serializable {
         .distinct()
         .persist(StorageLevel.MEMORY_ONLY_SER_2)
       cds.createOrReplaceTempView("cdsv")
-      println(date + ": cds count: " + cds.collect().size)
 
       sqlContext.sql(
         """
@@ -99,8 +97,6 @@ class Analysis extends java.io.Serializable {
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("cds")
-      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_cds from cds""").show(1, false)
-
 
       sqlContext.sql(
         """
@@ -130,8 +126,6 @@ class Analysis extends java.io.Serializable {
           """.stripMargin
       ).persist(StorageLevel.MEMORY_ONLY_SER_2)
         .createOrReplaceTempView("jhu")
-      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_jhu from jhu""").show(1, false)
-
 
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
       val combined = sqlContext.sql(
@@ -173,9 +167,6 @@ class Analysis extends java.io.Serializable {
                 """.stripMargin
       )
       combined.createOrReplaceTempView("combined")
-      println(date + ": combined count: " + combined.collect().size)
-      sqlContext.sql("""select max(cast(last_updated as date)) latest_update_combined from combined""").show(1, false)
-
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
 
       /* rename spark output file */

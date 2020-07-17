@@ -135,6 +135,7 @@ class Insights {
           (lead($"deaths", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"infected".desc, $"deaths".desc)))
       .persist(StorageLevel.MEMORY_ONLY_SER_2)
 
+    /* State Day over Day delta's Deaths and Affected */
     dod
       .select($"state")
       .distinct()

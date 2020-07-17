@@ -43,7 +43,7 @@ Some useful queries in the Insights class for the USA
 
 [**Example Output Text**](./sample_covid19_results.txt)
 
- 1. [Deaths and affected by COVID by day US totals](../src/main/scala/com/poly/covid/sql/Insights.scala#L45): this is an exact match John Hopkins Outputs in their daily graph. 
+ 1. [Deaths and affected by COVID by day US totals](../src/main/scala/com/poly/covid/sql/Insights.scala#L46): this is an exact match John Hopkins Outputs in their daily graph. 
     
         +------------+---------+-----------+
         |last_updated|us_deaths|us_affected|
@@ -56,7 +56,7 @@ Some useful queries in the Insights class for the USA
         +------------+---------+-----------+
         only showing top 5 rows
 
- 2. [Daily US State Numbers](../src/main/scala/com/poly/covid/sql/Insights.scala#L57)
+ 2. [Daily US State Numbers](../src/main/scala/com/poly/covid/sql/Insights.scala#L66)
  
         +------------+--------------+--------+------+---------+------------+----------+
         |last_updated|state         |infected|deaths|recovered|hospitalized|discharged|
@@ -113,7 +113,7 @@ Some useful queries in the Insights class for the USA
         |2020-06-19  |Montana       |332     |10    |null     |null        |null      |
         +------------+--------------+--------+------+---------+------------+----------+
 
-  3. [State Day over Day delta's Deaths and Affected](../src/main/scala/com/poly/covid/sql/Insights.scala#L92)
+  3. [State Day over Day delta's Deaths and Affected](../src/main/scala/com/poly/covid/sql/Insights.scala#L138)
 
             +------------+-------+--------+------------+------+----------+
             |last_updated|state  |infected|dod_infected|deaths|dod_deaths|

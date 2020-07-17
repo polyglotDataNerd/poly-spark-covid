@@ -4,7 +4,8 @@ import com.poly.utils.Utils
 import org.apache.commons.lang3.time.DateUtils
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.lead
+import org.apache.spark.sql.functions.{format_number, lead}
+import org.apache.spark.sql.types.{DateType, IntegerType}
 import org.apache.spark.storage.StorageLevel
 
 class Insights {
@@ -146,6 +147,54 @@ class Insights {
           .show(25, false)
       }
       ))
+
+    /* weekly snapshot of top 10 hard hit states */
+    dod
+      .select($"last_updated", $"state", $"infected", $"dod_infected".as("current_infected"))
+      .withColumn("previous_day",
+        (lead($"current_infected", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("minus3",
+        (lead($"current_infected", 2, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("minus4",
+        (lead($"current_infected", 3, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("minus5",
+        (lead($"current_infected", 4, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("minus6",
+        (lead($"current_infected", 5, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("previous_day_diff",
+        $"current_infected" -
+          (lead($"current_infected", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"current_infected".desc)))
+      .withColumn("minus3_diff",
+        $"previous_day" -
+          (lead($"previous_day", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"previous_day".desc)))
+      .withColumn("minus4_diff",
+        $"minus3" -
+          (lead($"minus3", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"minus3".desc)))
+      .withColumn("minus5_diff",
+        $"minus4" -
+          (lead($"minus4", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"minus4".desc)))
+      .withColumn("minus6_diff",
+        $"minus5" -
+          (lead($"minus5", 1, 1) over Window.partitionBy($"state").orderBy($"last_updated".desc, $"minus5".desc)))
+      .orderBy($"last_updated".cast(DateType).desc, $"dod_infected".cast(IntegerType).desc)
+      .select(
+        $"last_updated",
+        $"state",
+        format_number($"infected", 0).as("infected"),
+        format_number($"current_infected", 0).as("current_infected"),
+        format_number($"previous_day", 0).as("previous_day"),
+        format_number($"minus3", 0).as("minus3"),
+        format_number($"minus4", 0).as("minus4"),
+        format_number($"minus5", 0).as("minus5"),
+        format_number($"minus6", 0).as("minus6"),
+        format_number($"previous_day_diff", 0).as("previous_day_diff"),
+        format_number($"minus3_diff", 0).as("minus3_diff"),
+        format_number($"minus4_diff", 0).as("minus4_diff"),
+        format_number($"minus5_diff", 0).as("minus5_diff"),
+        format_number($"minus6_diff", 0).as("minus6_diff")
+      )
+      .limit(10)
+      .show()
   }
 
 

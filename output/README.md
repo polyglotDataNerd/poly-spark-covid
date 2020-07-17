@@ -37,11 +37,13 @@ Output Fields
 Helpful Queries
 -
 
-Some important queries to help initial discovery, located in the scala class [Insights](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala). The platform is Apache Spark and the language is Scala but if you are more familiar with PySpark the queries could be used in any Spark interpreter.  
+Some important queries to help initial discovery, located in the scala class [Insights](../src/main/scala/com/poly/covid/sql/Insights.scala). The platform is Apache Spark and the language is Scala but if you are more familiar with PySpark the queries could be used in any Spark interpreter.  
 
 Some useful queries in the Insights class for the USA
 
- 1. [Deaths and affected by COVID by day US totals](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala#L45): this is an exact match John Hopkins Outputs in their daily graph. 
+[**Example Output Text**](./sample_covid19_results.txt)
+
+ 1. [Deaths and affected by COVID by day US totals](../src/main/scala/com/poly/covid/sql/Insights.scala#L45): this is an exact match John Hopkins Outputs in their daily graph. 
     
         +------------+---------+-----------+
         |last_updated|us_deaths|us_affected|
@@ -54,7 +56,7 @@ Some useful queries in the Insights class for the USA
         +------------+---------+-----------+
         only showing top 5 rows
 
- 2. [Daily US State Numbers](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala#L57)
+ 2. [Daily US State Numbers](../src/main/scala/com/poly/covid/sql/Insights.scala#L57)
  
         +------------+--------------+--------+------+---------+------------+----------+
         |last_updated|state         |infected|deaths|recovered|hospitalized|discharged|
@@ -111,7 +113,7 @@ Some useful queries in the Insights class for the USA
         |2020-06-19  |Montana       |332     |10    |null     |null        |null      |
         +------------+--------------+--------+------+---------+------------+----------+
 
-  3. [State Day over Day delta's Deaths and Affected](https://github.com/polyglotDataNerd/poly-spark-covid/blob/master/src/main/scala/com/poly/covid/sql/Insights.scala#L92)
+  3. [State Day over Day delta's Deaths and Affected](../src/main/scala/com/poly/covid/sql/Insights.scala#L92)
 
             +------------+-------+--------+------------+------+----------+
             |last_updated|state  |infected|dod_infected|deaths|dod_deaths|
@@ -206,3 +208,4 @@ Some useful queries in the Insights class for the USA
             |2020-05-26  |Georgia|40276   |1156        |1867  |42        |
             +------------+-------+--------+------------+------+----------+
             only showing top 25 rows
+                     

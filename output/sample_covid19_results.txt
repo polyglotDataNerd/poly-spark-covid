@@ -17,7 +17,7 @@ only showing top 10 rows
 +------------+--------------+--------+------+---------+------------+----------+
 |last_updated|state         |infected|deaths|recovered|hospitalized|discharged|
 +------------+--------------+--------+------+---------+------------+----------+
-|2020-07-19  |New York      |406,328 |57,744|null     |null        |null      |
+|2020-07-19  |New York      |406,328 |22,872|null     |null        |null      |
 |2020-07-19  |California    |384,667 |7,700 |81,573   |3,418       |null      |
 |2020-07-19  |Florida       |349,659 |7,473 |null     |null        |null      |
 |2020-07-19  |Texas         |330,060 |3,965 |null     |null        |null      |

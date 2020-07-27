@@ -28,7 +28,7 @@ class CovidQA {
       .option("delimiter", "\t")
       .option("quote", "\"")
       .option("escape", "\"")
-      .schema(schemas.covidStruct())
+      .schema(schemas.covidStructNew())
       .csv("s3a://poly-testing/covid/combined/*")
       .coalesce(4)
       .distinct()
@@ -48,7 +48,7 @@ class CovidQA {
     sqlContext
       .read
       .option("header", true)
-      .schema(schemas.cds())
+      .schema(schemas.cdsNew())
       .csv("s3a://poly-testing/covid/cds/*")
       .coalesce(4)
       .distinct()

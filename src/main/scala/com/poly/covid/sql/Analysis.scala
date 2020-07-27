@@ -42,7 +42,7 @@ class Analysis extends java.io.Serializable {
         .read
         .option("quote", "\"")
         .option("escape", "\"")
-        .schema(schemas.cds())
+        .schema(schemas.cdsNew())
         .option("header", "true")
         .csv("s3a://poly-testing/covid/cds/" + date + "/*")
         .distinct()
@@ -61,7 +61,7 @@ class Analysis extends java.io.Serializable {
           population,
           Latitude,
           Longitude,
-          url,
+          --url,
           aggregate,
           timezone,
           icu,
@@ -74,7 +74,7 @@ class Analysis extends java.io.Serializable {
           sum(tested) tested,
           sum(hospitalized) hospitalized,
           sum(discharged) discharged,
-          max(growthFactor) growthFactor,
+          --max(growthFactor) growthFactor,
           last_updated
          from cdsv
           group by
@@ -87,7 +87,7 @@ class Analysis extends java.io.Serializable {
             population,
             Latitude,
             Longitude,
-            url,
+            --url,
             aggregate,
             timezone,
             icu,
@@ -140,7 +140,7 @@ class Analysis extends java.io.Serializable {
                 a.population,
                 a.Latitude,
                 a.Longitude,
-                a.url,
+                --a.url,
                 a.aggregate,
                 a.timezone,
                 a.cases,
@@ -154,7 +154,7 @@ class Analysis extends java.io.Serializable {
                 tested,
                 a.hospitalized,
                 a.discharged,
-                a.growthFactor,
+                --a.growthFactor,
                 a.last_updated,
                 a.icu,
                 a.hospitalized_current,

@@ -13,7 +13,6 @@ Output Fields
     population:string
     latitude:double
     longitude:double
-    url:string
     aggregate:string
     timezone:string
     cases:string
@@ -27,7 +26,6 @@ Output Fields
     tested:string
     hospitalized:string
     discharged:string
-    growth_factor:string
     last_updated:date
     icu:string
     hospitalized_current:string

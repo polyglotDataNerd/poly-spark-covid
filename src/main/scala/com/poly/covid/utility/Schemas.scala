@@ -53,6 +53,36 @@ class Schemas extends Serializable {
     )
   }
 
+  def cdsNew(): StructType = {
+    StructType(Seq(
+      StructField("locationID", StringType, true),
+      StructField("slug", StringType, true),
+      StructField("name", StringType, true),
+      StructField("level", StringType, true),
+      StructField("city", StringType, true),
+      StructField("county", StringType, true),
+      StructField("state", StringType, true),
+      StructField("country", StringType, true),
+      StructField("Latitude", DoubleType, true),
+      StructField("Longitude", DoubleType, true),
+      StructField("population", StringType, true),
+      StructField("aggregate", StringType, true),
+      StructField("timezone", StringType, true),
+      StructField("cases", StringType, true),
+      StructField("deaths", StringType, true),
+      StructField("recovered", StringType, true),
+      StructField("active", StringType, true),
+      StructField("tested", StringType, true),
+      StructField("hospitalized", StringType, true),
+      StructField("hospitalized_current", StringType, true),
+      StructField("discharged", StringType, true),
+      StructField("icu", StringType, true),
+      StructField("icu_current", StringType, true),
+      StructField("last_updated", DateType, true)
+    )
+    )
+  }
+
   def covidStruct(): StructType = {
     StructType(Seq(
       StructField("name", StringType, true),
@@ -84,6 +114,37 @@ class Schemas extends Serializable {
     )
     )
   }
+
+  def covidStructNew(): StructType = {
+    StructType(Seq(
+      StructField("name", StringType, true),
+      StructField("level", StringType, true),
+      StructField("city", StringType, true),
+      StructField("county", StringType, true),
+      StructField("state", StringType, true),
+      StructField("country", StringType, true),
+      StructField("population", StringType, true),
+      StructField("latitude", DoubleType, true),
+      StructField("longitude", DoubleType, true),
+      StructField("aggregate", StringType, true),
+      StructField("timezone", StringType, true),
+      StructField("cases", StringType, true),
+      StructField("us_confirmed_county", StringType, true),
+      StructField("deaths", StringType, true),
+      StructField("us_deaths_county", StringType, true),
+      StructField("recovered", StringType, true),
+      StructField("us_recovered_county", StringType, true),
+      StructField("active", StringType, true),
+      StructField("us_active_county", StringType, true),
+      StructField("tested", StringType, true),
+      StructField("hospitalized", StringType, true),
+      StructField("discharged", StringType, true),
+      StructField("last_updated", DateType, true),
+      StructField("icu", StringType, true)
+    )
+    )
+  }
+
 
 
 }

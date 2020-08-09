@@ -27,12 +27,26 @@ class Analysis extends java.io.Serializable {
     val schemas: Schemas = new Schemas
 
     try {
-      /*imports functions*/
-      /**/ val jhu = sqlContext
+      /* write src to ORC */
+      utils.orcWriter("s3a://poly-testing/covid/orc/jhu/", sqlContext
         .read
         .schema(schemas.jhu())
         .csv("s3a://poly-testing/covid/jhu/transformed/*")
-        .distinct()
+        .distinct())
+
+      utils.orcWriter("s3a://poly-testing/covid/orc/cds/", sqlContext
+        .read
+        .option("quote", "\"")
+        .option("escape", "\"")
+        .schema(schemas.cdsNew())
+        .option("header", "true")
+        .csv("s3a://poly-testing/covid/cds/" + date + "/*")
+        .distinct())
+
+      /* uses ORC source to write combined dataset */
+      val jhu = sqlContext
+        .read
+        .orc("s3a://poly-testing/covid/orc/jhu/*")
         .persist(StorageLevel.MEMORY_ONLY_SER_2)
       jhu.createOrReplaceTempView("jhuv")
 
@@ -40,12 +54,7 @@ class Analysis extends java.io.Serializable {
       go pipeline takes current and history daily */
       val cds = sqlContext
         .read
-        .option("quote", "\"")
-        .option("escape", "\"")
-        .schema(schemas.cdsNew())
-        .option("header", "true")
-        .csv("s3a://poly-testing/covid/cds/" + date + "/*")
-        .distinct()
+        .orc("s3a://poly-testing/covid/orc/cds/*")
         .persist(StorageLevel.MEMORY_ONLY_SER_2)
       cds.createOrReplaceTempView("cdsv")
 
@@ -166,13 +175,23 @@ class Analysis extends java.io.Serializable {
            order by country DESC, city ASC
                 """.stripMargin
       )
-      combined.createOrReplaceTempView("combined")
       utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
 
       /* rename spark output file */
       val fs = FileSystem.get(new URI(s"s3a://poly-testing"), sc.hadoopConfiguration)
       val fileName = fs.globStatus(new Path("s3a://poly-testing/covid/combined/part*"))(0).getPath.getName.trim
       fs.rename(new Path("s3a://poly-testing/covid/combined/" + fileName), new Path("s3a://poly-testing/covid/combined/covid19_combined.gz"))
+
+      /* write to ORC */
+      utils.orcWriter("s3a://poly-testing/covid/orc/combined/", sqlContext
+        .read
+        .option("header", true)
+        .option("delimiter", "\t")
+        .option("quote", "\"")
+        .option("escape", "\"")
+        .schema(schemas.covidStructNew())
+        .csv("s3a://poly-testing/covid/combined/*")
+        .distinct())
 
       sw.stop()
       println("INFO spark process runtime (seconds): " + sw.getTime(TimeUnit.SECONDS))

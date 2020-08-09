@@ -15,45 +15,36 @@ class CovidQA {
   private val sw = new StopWatch
   private val schemas: Schemas = new Schemas
   private val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  private val date = format.format(DateUtils.addDays(new java.util.Date(), -1))
+  private val date = format.format(DateUtils.addDays(new java.util.Date(), -2))
   private val delim = "\n"
 
   def runQA(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
 
 
     sw.start()
+
     val df = sqlContext
       .read
-      .option("header", true)
-      .option("delimiter", "\t")
-      .option("quote", "\"")
-      .option("escape", "\"")
       .schema(schemas.covidStructNew())
-      .csv("s3a://poly-testing/covid/combined/*")
-      .coalesce(4)
+      .orc("s3a://poly-testing/covid/orc/combined/*")
       .distinct()
       .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
     df.createOrReplaceTempView("covid")
-    
-    sqlContext
-      .read
-      .option("header", true)
-      .schema(schemas.jhu())
-      .csv("s3a://poly-testing/covid/jhu/transformed/*")
-      .coalesce(4)
-      .distinct()
-      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-      .createOrReplaceTempView("jhu")
 
-    sqlContext
+    val jhu = sqlContext
       .read
-      .option("header", true)
-      .schema(schemas.cdsNew())
-      .csv("s3a://poly-testing/covid/cds/*")
-      .coalesce(4)
-      .distinct()
-      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-      .createOrReplaceTempView("cds")
+      .orc("s3a://poly-testing/covid/orc/jhu/*")
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+    jhu.createOrReplaceTempView("jhu")
+
+    /* only takes current day pull and not all files since the
+    go pipeline takes current and history daily */
+    val cds = sqlContext
+      .read
+      .orc("s3a://poly-testing/covid/orc/cds/*")
+      .persist(StorageLevel.MEMORY_ONLY_SER_2)
+    cds.createOrReplaceTempView("cds")
+
 
     import sqlContext.implicits._
 
@@ -115,7 +106,7 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "Combined")).append(delim)
     sqlContext.sql(
       """
-        select last_updated, count(distinct last_updated||level||county||state||country) as combined_records
+        select last_updated, count(distinct last_updated||level||county||state||country) as orc_records
         |from covid
         |group by 1
         |order by 1 desc

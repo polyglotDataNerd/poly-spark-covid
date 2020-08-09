@@ -47,6 +47,8 @@ object Loader extends java.io.Serializable {
       .config("spark.hadoop.mapred.output.compression.codec", "org.apache.hadoop.io.compress.GzipCodec")
       .config("spark.mapreduce.output.fileoutputformat.compress", "true")
       .config("spark.mapreduce.output.fileoutputformat.compress.codec", "org.apache.hadoop.io.compress.GzipCodec")
+      .config("spark.sql.orc.impl", "native")
+      .config("spark.sql.orc.enableVectorizedReader", "true")
       .config("spark.debug.maxToStringFields", "500")
       .config("spark.sql.caseSensitive", "false")
       .config("spark.hadoop.fs.s3a.multiobjectdelete.enable", "false")

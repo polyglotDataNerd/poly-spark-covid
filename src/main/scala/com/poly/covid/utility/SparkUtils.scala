@@ -20,8 +20,7 @@ class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extend
         .mode(SaveMode.Overwrite)
         .option("compression", "snappy")
         .option("orc.create.index", "true")
-        .format("orc")
-        .save(target)
+        .orc(target)
     }
     catch {
       case e: Exception => {

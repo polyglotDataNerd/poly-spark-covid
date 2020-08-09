@@ -1,6 +1,6 @@
 **Tracks COVID19 Cases**
 
-[Download Consolidated Dataset](https://poly-testing.s3-us-west-2.amazonaws.com/covid/combined/covid19_combined.gz)
+[Download Consolidated Dataset](https://poly-testing.s3-us-west-2.amazonaws.com/covid/orc/covid19_orc.gz)
 
 Output Fields
 -

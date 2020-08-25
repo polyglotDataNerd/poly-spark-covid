@@ -3,12 +3,13 @@ package com.poly.covid.sql
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
-import com.poly.utils._
 import com.poly.covid.utility._
+import com.poly.utils._
 import org.apache.commons.lang3.time.{DateUtils, StopWatch}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.functions.broadcast
 import org.apache.spark.storage.StorageLevel
 
 
@@ -23,8 +24,8 @@ class Analysis extends java.io.Serializable {
   def run(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
     sc.setCheckpointDir("/tmp/checkpoints")
     sw.start()
-    val utils: SparkUtils = new SparkUtils(sc, stringBuilder)
-    val schemas: Schemas = new Schemas
+    lazy val utils: SparkUtils = new SparkUtils(sc, stringBuilder)
+    lazy val schemas: Schemas = new Schemas
 
     try {
       /* write src to ORC */
@@ -44,19 +45,19 @@ class Analysis extends java.io.Serializable {
         .distinct())
 
       /* uses ORC source to write combined dataset */
-      val jhu = sqlContext
+      val jhu = sc.broadcast(sqlContext
         .read
         .orc("s3a://poly-testing/covid/orc/jhu/*")
-        .persist(StorageLevel.MEMORY_ONLY_SER_2)
-      jhu.createOrReplaceTempView("jhuv")
+      )
+      jhu.value.persist(StorageLevel.MEMORY_ONLY_SER_2).createOrReplaceTempView("jhuv")
 
       /* only takes current day pull and not all files since the
       go pipeline takes current and history daily */
-      val cds = sqlContext
+      val cds = sc.broadcast(sqlContext
         .read
         .orc("s3a://poly-testing/covid/orc/cds/*")
-        .persist(StorageLevel.MEMORY_ONLY_SER_2)
-      cds.createOrReplaceTempView("cdsv")
+      )
+      cds.value.persist(StorageLevel.MEMORY_ONLY_SER_2).createOrReplaceTempView("cdsv")
 
       sqlContext.sql(
         """
@@ -104,7 +105,7 @@ class Analysis extends java.io.Serializable {
             hospitalized_current,
             icu_current
           """.stripMargin
-      ).persist(StorageLevel.MEMORY_ONLY_SER_2)
+      ).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
         .createOrReplaceTempView("cds")
 
       sqlContext.sql(
@@ -133,11 +134,11 @@ class Analysis extends java.io.Serializable {
             Longitude,
             Combined_Key
           """.stripMargin
-      ).persist(StorageLevel.MEMORY_ONLY_SER_2)
+      ).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
         .createOrReplaceTempView("jhu")
 
       /* denormalized table is exploded so will have possible duplicity overwrites since it consolidates history/current daily */
-      val combined = sqlContext.sql(
+      utils.gzipWriter("s3a://poly-testing/covid/combined/", sqlContext.sql(
         """
             select distinct
                 a.name,
@@ -174,8 +175,7 @@ class Analysis extends java.io.Serializable {
              and lower(trim(a.state)) = lower(trim(b.Province_State))
            order by country DESC, city ASC
                 """.stripMargin
-      )
-      utils.gzipWriter("s3a://poly-testing/covid/combined/", combined)
+      ))
 
       /* rename spark output file */
       val fs = FileSystem.get(new URI(s"s3a://poly-testing"), sc.hadoopConfiguration)

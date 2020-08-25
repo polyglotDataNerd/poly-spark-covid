@@ -13,7 +13,7 @@ import org.apache.spark.storage.StorageLevel
 class CovidQA {
 
   private val sw = new StopWatch
-  private val schemas: Schemas = new Schemas
+  private lazy val schemas: Schemas = new Schemas
   private val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   private val date = format.format(DateUtils.addDays(new java.util.Date(), -2))
   private val delim = "\n"
@@ -23,27 +23,25 @@ class CovidQA {
 
     sw.start()
 
-    val df = sqlContext
+    val df = sc.broadcast(sqlContext
       .read
       .schema(schemas.covidStructNew())
       .orc("s3a://poly-testing/covid/orc/combined/*")
-      .distinct()
-      .persist(StorageLevel.MEMORY_AND_DISK_SER_2)
-    df.createOrReplaceTempView("covid")
+      .distinct())
+    df.value.persist(StorageLevel.MEMORY_ONLY_SER_2) createOrReplaceTempView ("covid")
 
-    val jhu = sqlContext
+    val jhu = sc.broadcast(sqlContext
       .read
-      .orc("s3a://poly-testing/covid/orc/jhu/*")
-      .persist(StorageLevel.MEMORY_ONLY_SER_2)
-    jhu.createOrReplaceTempView("jhu")
+      .orc("s3a://poly-testing/covid/orc/jhu/*"))
+    jhu.value.persist(StorageLevel.MEMORY_ONLY_SER_2) createOrReplaceTempView ("jhu")
 
     /* only takes current day pull and not all files since the
     go pipeline takes current and history daily */
-    val cds = sqlContext
+    val cds = sc.broadcast(sqlContext
       .read
       .orc("s3a://poly-testing/covid/orc/cds/*")
-      .persist(StorageLevel.MEMORY_ONLY_SER_2)
-    cds.createOrReplaceTempView("cds")
+    )
+    cds.value.persist(StorageLevel.MEMORY_ONLY_SER_2).createOrReplaceTempView("cds")
 
 
     import sqlContext.implicits._

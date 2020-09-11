@@ -12,7 +12,7 @@ class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extend
   val date = format.format(new java.util.Date())
   val partitions = Runtime.getRuntime.availableProcessors() * 9
 
-  def orcWriter(target: String, df: DataFrame): Unit = {
+  def orcWriterSnappy(target: String, df: DataFrame): Unit = {
     try {
       df
         .coalesce(1)
@@ -29,6 +29,27 @@ class SparkUtils(sc: SparkContext, stringBuilder: java.lang.StringBuffer) extend
       }
     }
   }
+
+  def orcWriterPartitionZSTD(target: String, df: DataFrame, partitionCol: Seq[String]): Unit = {
+    try {
+
+      df
+        .repartition(partitionCol.size)
+        .write
+        .mode(SaveMode.Overwrite)
+        .option("codec", "org.apache.hadoop.io.compress.ZStandardCodec")
+        .option("orc.create.index", "true")
+        .partitionBy(partitionCol:_*)
+        .orc(target)
+    }
+    catch {
+      case e: Exception => {
+        println("Exception", e)
+        stringBuilder.append("ERROR " + e.getMessage).append("\n")
+      }
+    }
+  }
+
 
   def gzipWriter(target: String, df: DataFrame): Unit = {
     try {

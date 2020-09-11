@@ -9,7 +9,6 @@ import org.apache.commons.lang3.time.{DateUtils, StopWatch}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.functions.broadcast
 import org.apache.spark.storage.StorageLevel
 
 
@@ -18,7 +17,7 @@ class Analysis extends java.io.Serializable {
   val config: ConfigProps = new ConfigProps
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   val date = format.format(DateUtils.addDays(new java.util.Date(), -0))
-  val sw = new StopWatch
+  val   sw = new StopWatch
 
 
   def run(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
@@ -29,13 +28,13 @@ class Analysis extends java.io.Serializable {
 
     try {
       /* write src to ORC */
-      utils.orcWriter("s3a://poly-testing/covid/orc/jhu/", sqlContext
+      utils.orcWriterSnappy("s3a://poly-testing/covid/orc/jhu/", sqlContext
         .read
         .schema(schemas.jhu())
         .csv("s3a://poly-testing/covid/jhu/transformed/*")
         .distinct())
 
-      utils.orcWriter("s3a://poly-testing/covid/orc/cds/", sqlContext
+      utils.orcWriterSnappy("s3a://poly-testing/covid/orc/cds/", sqlContext
         .read
         .option("quote", "\"")
         .option("escape", "\"")
@@ -183,7 +182,7 @@ class Analysis extends java.io.Serializable {
       fs.rename(new Path("s3a://poly-testing/covid/combined/" + fileName), new Path("s3a://poly-testing/covid/combined/covid19_combined.gz"))
 
       /* write to ORC */
-      utils.orcWriter("s3a://poly-testing/covid/orc/combined/", sqlContext
+      utils.orcWriterSnappy("s3a://poly-testing/covid/orc/combined/", sqlContext
         .read
         .option("header", true)
         .option("delimiter", "\t")

@@ -31,7 +31,7 @@ object Loader extends java.io.Serializable {
   def runSpark(): Unit = {
     val stringBuilder: java.lang.StringBuffer = new java.lang.StringBuffer
     val utils: Utils = new Utils()
-    /*local mac*/
+    /*local mac
     val sparkSession = SparkSession
       .builder()
       .master("local[*]")
@@ -58,9 +58,9 @@ object Loader extends java.io.Serializable {
       .config("spark.hadoop.fs.s3a.secret.key", utils.getSSMParam("/s3/polyglotDataNerd/admin/SecretKey"))
       .getOrCreate()
     val sparkContext = sparkSession.sparkContext
-    val sqlContext = sparkSession.sqlContext
+    val sqlContext = sparkSession.sqlContext*/
 
-    /* val sparkSession = SparkSession
+    /**/ val sparkSession = SparkSession
       .builder()
       .appName("spark-COVIDLoader" + "-" + java.util.UUID.randomUUID())
       /* EMR 6.0.0 */
@@ -90,7 +90,7 @@ object Loader extends java.io.Serializable {
       .getOrCreate()
     sparkSession.sparkContext.setLogLevel("ERROR")
     val sparkContext = sparkSession.sparkContext
-    val sqlContext = sparkSession.sqlContext*/
+    val sqlContext = sparkSession.sqlContext
 
     new Analysis().run(sparkContext, sqlContext, stringBuilder)
     new Utils(config.getPropValues("emails"), config.getPropValues("fromemails"),

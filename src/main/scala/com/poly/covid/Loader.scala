@@ -4,7 +4,7 @@ package com.poly.covid
 aws s3 cp ~/sg-spark-ccpa/ s3://polyglotDataNerd-bigdata-utility/spark/sg-spark-ccpa --recursive --sse  --include "*" --exclude "*.DS_Store*" --exclude "*.iml*" --exclude "*dependency-reduced-pom.xml"
 */
 
-import com.poly.covid.sql.Analysis
+import com.poly.covid.sql.CovidELT
 import com.poly.utils._
 import org.apache.hadoop.yarn.util.RackResolver
 import org.apache.log4j.{Level, Logger}
@@ -92,7 +92,7 @@ object Loader extends java.io.Serializable {
     val sparkContext = sparkSession.sparkContext
     val sqlContext = sparkSession.sqlContext
 
-    new Analysis().run(sparkContext, sqlContext, stringBuilder)
+    new CovidELT().run(sparkContext, sqlContext, stringBuilder)
     new Utils(config.getPropValues("emails"), config.getPropValues("fromemails"),
       "ETL Notification " + " SPARK: COVID-19 Loader",
       stringBuilder.toString()).sendEMail()

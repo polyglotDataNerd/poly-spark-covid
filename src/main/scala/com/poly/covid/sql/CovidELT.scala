@@ -12,12 +12,12 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.storage.StorageLevel
 
 
-class Analysis extends java.io.Serializable {
+class CovidELT extends java.io.Serializable {
 
   val config: ConfigProps = new ConfigProps
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   val date = format.format(DateUtils.addDays(new java.util.Date(), -0))
-  val   sw = new StopWatch
+  val sw = new StopWatch
 
 
   def run(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
@@ -31,7 +31,7 @@ class Analysis extends java.io.Serializable {
       utils.orcWriterSnappy("s3a://poly-testing/covid/orc/jhu/", sqlContext
         .read
         .schema(schemas.jhu())
-        .csv("s3a://poly-testing/covid/jhu/transformed/*")
+        .csv("s3a://poly-testing/covid/jhu/transformed/" + date + "/*")
         .distinct())
 
       utils.orcWriterSnappy("s3a://poly-testing/covid/orc/cds/", sqlContext

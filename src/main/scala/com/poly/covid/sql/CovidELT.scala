@@ -143,9 +143,9 @@ class CovidELT extends java.io.Serializable {
                 a.name,
                 a.level,
                 a.city,
-                a.county,
-                a.state,
-                a.country,
+                b.county,
+                b.Province_State state,
+                b.Country_Region country,
                 a.population,
                 a.Latitude,
                 a.Longitude,
@@ -164,11 +164,11 @@ class CovidELT extends java.io.Serializable {
                 a.hospitalized,
                 a.discharged,
                 --a.growthFactor,
-                a.last_updated,
+                b.last_updated,
                 a.icu,
                 a.hospitalized_current,
                 a.icu_current
-           from cds a left join jhu b
+           from jhu b left join cds a
              on a.last_updated = b.last_updated
              and lower(trim(substring_index(a.county, ' ', 1))) = lower(trim(b.county))
              and lower(trim(a.state)) = lower(trim(b.Province_State))

@@ -77,7 +77,7 @@ class Insights {
         |             state,
         |             cast(sum(deaths) as Integer) deaths
         |      from covid
-        |      where country = 'United States'
+        |      country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
@@ -87,7 +87,7 @@ class Insights {
         |           cast(sum(hospitalized) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
-        |    where country = 'United States'
+        |    country = 'US'
         |      and state is not null
         |      and level = 'county'
         |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
@@ -112,7 +112,7 @@ class Insights {
         |             state,
         |             cast(sum(deaths) as Integer) deaths
         |      from covid
-        |      where country = 'United States'
+        |      country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
@@ -122,7 +122,7 @@ class Insights {
         |           cast(sum(hospitalized) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
-        |    where country = 'United States'
+        |    country = 'US'
         |      and state is not null
         |      and level = 'county'
         |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated

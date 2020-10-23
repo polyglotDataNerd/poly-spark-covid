@@ -15,7 +15,7 @@ class CovidQA {
   private val sw = new StopWatch
   private lazy val schemas: Schemas = new Schemas
   private val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
-  private val date = format.format(DateUtils.addDays(new java.util.Date(), -2))
+  private val date = format.format(DateUtils.addDays(new java.util.Date(), -0))
   private val delim = "\n"
 
   def runQA(sc: SparkContext, sqlContext: SQLContext, stringBuilder: java.lang.StringBuffer): Unit = {
@@ -104,7 +104,7 @@ class CovidQA {
     stringBuilder.append(String.format("%s", "Combined")).append(delim)
     sqlContext.sql(
       """
-        select last_updated, count(distinct last_updated||level||county||state||country) as orc_records
+        select last_updated, count(distinct last_updated||county||state||country) as orc_records
         |from covid
         |group by 1
         |order by 1 desc
@@ -129,16 +129,16 @@ class CovidQA {
         |       format_number(discharged, 0) as  discharged
         |from (select last_updated,
         |             state,
-        |             cast(sum(US_Deaths_County) as Integer) deaths
+        |             cast(sum(us_deaths_county) as Integer) deaths
         |      from covid
         |      where country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
         |           state,
-        |           cast(sum(US_Confirmed_County) as Integer) infected,
+        |           cast(sum(us_confirmed_county) as Integer) infected,
         |           cast(sum(recovered) as Integer)   recovered,
-        |           cast(sum(US_Active_County) as Integer) hospitalized,
+        |           cast(sum(us_active_county) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
         |    where country = 'US'
@@ -168,16 +168,16 @@ class CovidQA {
         |       discharged discharged
         |from (select last_updated,
         |             state,
-        |             cast(sum(US_Deaths_County) as Integer) deaths
+        |             cast(sum(us_deaths_county) as Integer) deaths
         |      from covid
         |      where country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
         |           state,
-        |           cast(sum(US_Confirmed_County) as Integer) infected,
+        |           cast(sum(us_confirmed_county) as Integer) infected,
         |           cast(sum(recovered) as Integer)   recovered,
-        |           cast(sum(US_Active_County) as Integer) hospitalized,
+        |           cast(sum(us_active_county) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
         |    where country = 'US'

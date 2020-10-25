@@ -1,6 +1,6 @@
 **Tracks COVID19 Cases**
 
-[Download Consolidated Dataset](https://poly-testing.s3-us-west-2.amazonaws.com/covid/orc/covid19_orc.gz)
+[Download Consolidated Dataset](https://poly-testing.s3-us-west-2.amazonaws.com/covid/combined/covid19_combined.gz)
 
 Output Fields
 -
@@ -39,7 +39,7 @@ Some important queries to help initial discovery, located in the scala class [In
 
 Some useful queries in the Insights class for the USA
 
-[**Example Output Text**](./sample_covid19_results.txt)
+[**Example Output Text**](./covid19_combined.gz)
 
  1. [Deaths and affected by COVID by day US totals](../src/main/scala/com/poly/covid/sql/Insights.scala#L46): this is an exact match John Hopkins Outputs in their daily graph. 
     

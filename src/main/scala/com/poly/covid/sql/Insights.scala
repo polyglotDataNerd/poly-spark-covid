@@ -68,28 +68,28 @@ class Insights {
       """
         |select dbs.last_updated,
         |       dbs.state,
-        |       infected as infected,
-        |       case when dbs.state != 'New York' then cast(deaths/2 as int) else deaths end as deaths,
-        |       recovered recovered,
-        |       hospitalized hospitalized,
-        |       discharged discharged
+        |       infected,
+        |       deaths,
+        |       format_number(recovered, 0) as recovered,
+        |       format_number(hospitalized, 0) as hospitalized,
+        |       format_number(discharged, 0) as  discharged
         |from (select last_updated,
         |             state,
-        |             cast(sum(deaths) as Integer) deaths
+        |             cast(sum(us_deaths_county) as Integer) deaths
         |      from covid
-        |      country = 'US'
+        |      where country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
         |           state,
-        |           cast(sum(cases) as Integer) infected,
+        |           cast(sum(us_confirmed_county) as Integer) infected,
         |           cast(sum(recovered) as Integer)   recovered,
-        |           cast(sum(hospitalized) as Integer) hospitalized,
+        |           cast(sum(us_active_county) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
-        |    country = 'US'
+        |    where country = 'US'
         |      and state is not null
-        |      and level = 'county'
+        |      --and level = 'county'
         |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
         |    order by infected desc, deaths desc
         |""".stripMargin)
@@ -103,29 +103,30 @@ class Insights {
       """
         |select dbs.last_updated,
         |       dbs.state,
-        |       infected as infected,
-        |       case when dbs.state != 'New York' then cast(deaths/2 as int) else deaths end as deaths,
-        |       recovered recovered,
-        |       hospitalized hospitalized,
-        |       discharged discharged
+        |       infected,
+        |       deaths,
+        |       format_number(recovered, 0) as recovered,
+        |       format_number(hospitalized, 0) as hospitalized,
+        |       format_number(discharged, 0) as  discharged
         |from (select last_updated,
         |             state,
-        |             cast(sum(deaths) as Integer) deaths
+        |             cast(sum(us_deaths_county) as Integer) deaths
         |      from covid
-        |      country = 'US'
+        |      where country = 'US'
         |      group by 1, 2 ) dbs
         |         join (
         |    select last_updated,
         |           state,
-        |           cast(sum(cases) as Integer) infected,
+        |           cast(sum(us_confirmed_county) as Integer) infected,
         |           cast(sum(recovered) as Integer)   recovered,
-        |           cast(sum(hospitalized) as Integer) hospitalized,
+        |           cast(sum(us_active_county) as Integer) hospitalized,
         |           cast(sum(discharged) as Integer)   discharged
         |    from covid
-        |    country = 'US'
+        |    where country = 'US'
         |      and state is not null
-        |      and level = 'county'
+        |      --and level = 'county'
         |    group by 1, 2) ibs on dbs.state = ibs.state and ibs.last_updated = dbs.last_updated
+        |    order by infected desc, deaths desc
         |""".stripMargin)
       .withColumn("dod_infected",
         $"infected" -
